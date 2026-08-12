@@ -2,7 +2,10 @@
 
 import React, { useState } from "react";
 import Link from "next/link";
-import { motion } from "framer-motion";
+import { motion, useSpring, useTransform } from "framer-motion";
+import Reveal from "@/components/Reveal";
+import { Stagger, StaggerItem } from "@/components/Stagger";
+import TiltCard from "@/components/TiltCard";
 import {
   Palette,
   Award,
@@ -20,6 +23,15 @@ import {
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import WhatsAppButton from "@/components/WhatsAppButton";
+
+/** Live-spring number: animates toward the latest value whenever it changes. */
+function AnimatedNumber({ value, className = "" }: { value: number; className?: string }) {
+  const spring = useSpring(value, { stiffness: 90, damping: 22 });
+  const display = useTransform(spring, (v) =>
+    Math.round(v).toLocaleString()
+  );
+  return <motion.span className={className}>{display}</motion.span>;
+}
 
 interface ServiceDetail {
   id: string;
@@ -131,23 +143,27 @@ export default function ServicesPage() {
         <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
           
           {/* Breadcrumb Back link */}
-          <Link
-            href="/"
-            className="inline-flex items-center gap-2 px-4 py-2 border-2 border-border bg-surface text-text rounded-full font-bold text-xs shadow-brutal hover:shadow-brutal-sm hover:translate-y-[2px] active:translate-y-[4px] active:shadow-none transition-all duration-150 mb-12 w-fit"
-          >
-            <ArrowLeft className="w-4 h-4 text-accent-coral" /> Back to Home
-          </Link>
+          <Reveal y={16}>
+            <Link
+              href="/"
+              className="inline-flex items-center gap-2 px-4 py-2 border-2 border-border bg-surface text-text rounded-full font-bold text-xs shadow-brutal hover:shadow-brutal-sm hover:translate-y-[2px] active:translate-y-[4px] active:shadow-none transition-all duration-150 mb-12 w-fit"
+            >
+              <ArrowLeft className="w-4 h-4 text-accent-coral" /> Back to Home
+            </Link>
+          </Reveal>
 
           {/* Heading */}
-          <div className="mb-20">
-            <span className="text-sm font-bold text-accent-coral tracking-widest uppercase block mb-2">Our Solutions</span>
-            <h1 className="font-display text-4xl sm:text-5xl md:text-6xl font-normal tracking-tight text-text">
-              Services <span className="font-extrabold text-accent-sky">Walkthrough</span>
-            </h1>
-            <p className="text-text-muted mt-4 text-lg max-w-3xl leading-relaxed">
-              Explore the detailed breakdowns of what goes into our work. Every service is tailored, transparent, and direct to the point.
-            </p>
-          </div>
+          <Reveal delay={0.1}>
+            <div className="mb-20">
+              <span className="text-sm font-bold text-accent-coral tracking-widest uppercase block mb-2">Our Solutions</span>
+              <h1 className="font-display text-4xl sm:text-5xl md:text-6xl font-normal tracking-tight text-text">
+                Services <span className="font-extrabold text-accent-sky">Walkthrough</span>
+              </h1>
+              <p className="text-text-muted mt-4 text-lg max-w-3xl leading-relaxed">
+                Explore the detailed breakdowns of what goes into our work. Every service is tailored, transparent, and direct to the point.
+              </p>
+            </div>
+          </Reveal>
 
           {/* SERVICES DETAIL WALKTHROUGH */}
           <div className="space-y-24 mb-28">
@@ -157,6 +173,8 @@ export default function ServicesPage() {
                 id={service.id}
                 className="scroll-mt-28"
               >
+                <Reveal x={index % 2 === 0 ? -48 : 48}>
+                <TiltCard maxTilt={3} className="h-full">
                 <div className="brutalist-card bg-surface p-8 sm:p-12 md:p-16 grid grid-cols-1 lg:grid-cols-12 gap-12 items-start">
                   
                   {/* Left info col */}
@@ -193,35 +211,40 @@ export default function ServicesPage() {
                     <h3 className="font-display font-bold text-lg text-text tracking-wider uppercase">
                       What's Included:
                     </h3>
-                    <ul className="space-y-4">
+                    <Stagger className="space-y-4">
                       {service.whatsIncluded.map((item, idx) => (
-                        <li key={idx} className="flex items-start gap-3">
+                        <StaggerItem key={idx} className="flex items-start gap-3">
                           <CheckCircle2 className="w-5 h-5 text-accent-sky flex-shrink-0 mt-0.5" />
                           <span className="text-sm font-medium text-text-muted leading-snug">
                             {item}
                           </span>
-                        </li>
+                        </StaggerItem>
                       ))}
-                    </ul>
+                    </Stagger>
                   </div>
 
                 </div>
+                </TiltCard>
+                </Reveal>
               </section>
             ))}
           </div>
 
           {/* PPC CALCULATOR SECTION */}
           <section id="ppc-calculator" className="scroll-mt-28">
-            <div className="text-center max-w-2xl mx-auto mb-12">
-              <span className="text-sm font-bold text-accent-sky tracking-widest uppercase block mb-2">Calculator</span>
-              <h2 className="font-display font-bold text-3xl sm:text-4xl text-text">
-                Calculate Your <span className="font-extrabold text-accent-coral">Investment</span>
-              </h2>
-              <p className="text-text-muted mt-3 text-sm">
-                Move the slider to match your monthly ad budget. See exactly how our transparent pricing structures first-month setup vs ongoing monthly management fees.
-              </p>
-            </div>
+            <Reveal>
+              <div className="text-center max-w-2xl mx-auto mb-12">
+                <span className="text-sm font-bold text-accent-sky tracking-widest uppercase block mb-2">Calculator</span>
+                <h2 className="font-display font-bold text-3xl sm:text-4xl text-text">
+                  Calculate Your <span className="font-extrabold text-accent-coral">Investment</span>
+                </h2>
+                <p className="text-text-muted mt-3 text-sm">
+                  Move the slider to match your monthly ad budget. See exactly how our transparent pricing structures first-month setup vs ongoing monthly management fees.
+                </p>
+              </div>
+            </Reveal>
 
+            <Reveal delay={0.1}>
             <div className="brutalist-card bg-surface p-8 sm:p-12 md:p-16 max-w-5xl mx-auto grid grid-cols-1 md:grid-cols-12 gap-12 items-center">
               {/* Slider Input Col */}
               <div className="md:col-span-7 space-y-8">
@@ -230,7 +253,7 @@ export default function ServicesPage() {
                     Monthly Ad Budget
                   </label>
                   <span className="font-display font-bold text-2xl text-accent-coral border-2 border-border bg-bg px-4 py-1.5 rounded-full shadow-brutal-sm">
-                    AED {adSpend.toLocaleString()}
+                    AED <AnimatedNumber value={adSpend} />
                   </span>
                 </div>
 
@@ -268,7 +291,7 @@ export default function ServicesPage() {
                   <div>
                     <span className="text-xs font-bold text-accent-coral tracking-widest uppercase block mb-1">First Month Total</span>
                     <h4 className="font-display font-extrabold text-3xl text-text">
-                      AED {firstMonthTotal.toLocaleString()}
+                      AED <AnimatedNumber value={firstMonthTotal} />
                     </h4>
                   </div>
                   <div className="border-t border-border/10 mt-4 pt-3 space-y-1.5 text-xs text-text-muted">
@@ -288,7 +311,7 @@ export default function ServicesPage() {
                   <div>
                     <span className="text-xs font-bold text-accent-sky tracking-widest uppercase block mb-1">Ongoing Monthly Agency Fee</span>
                     <h4 className="font-display font-extrabold text-3xl text-text">
-                      AED {ongoingMonthlyFee.toLocaleString()}
+                      AED <AnimatedNumber value={ongoingMonthlyFee} />
                     </h4>
                   </div>
                   <div className="border-t border-border/10 mt-4 pt-3 space-y-1.5 text-xs text-text-muted">
@@ -314,6 +337,7 @@ export default function ServicesPage() {
 
               </div>
             </div>
+            </Reveal>
           </section>
 
         </div>

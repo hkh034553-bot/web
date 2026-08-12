@@ -1,6 +1,8 @@
 import React from "react";
 import Link from "next/link";
 import { Mail, Phone, ArrowUpRight } from "lucide-react";
+import Reveal from "@/components/Reveal";
+import { Stagger, StaggerItem } from "@/components/Stagger";
 
 const GithubIcon = () => (
   <svg className="w-4 h-4 fill-current" viewBox="0 0 24 24">
@@ -26,9 +28,9 @@ export default function Footer() {
   return (
     <footer className="w-full border-t-2 border-border bg-surface text-text mt-auto transition-colors duration-300">
       <div className="mx-auto max-w-7xl px-4 py-12 sm:px-6 lg:px-8">
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
+        <Stagger className="grid grid-cols-1 md:grid-cols-4 gap-8">
           {/* Brand Info */}
-          <div className="md:col-span-2 space-y-4">
+          <StaggerItem className="md:col-span-2 space-y-4">
             <div className="flex items-center gap-2">
               <span className="brutalist-badge-coral w-10 h-10 flex items-center justify-center font-display font-bold text-xl text-white select-none">
                 H
@@ -69,10 +71,10 @@ export default function Footer() {
                 <TwitterIcon />
               </a>
             </div>
-          </div>
+          </StaggerItem>
 
           {/* Quick Links */}
-          <div>
+          <StaggerItem>
             <h4 className="font-display font-bold text-lg text-text mb-4">Navigation</h4>
             <ul className="space-y-2">
               <li>
@@ -101,10 +103,10 @@ export default function Footer() {
                 </Link>
               </li>
             </ul>
-          </div>
+          </StaggerItem>
 
           {/* Get in Touch */}
-          <div>
+          <StaggerItem>
             <h4 className="font-display font-bold text-lg text-text mb-4">Direct Contact</h4>
             <ul className="space-y-3">
               <li>
@@ -129,14 +131,16 @@ export default function Footer() {
                 </a>
               </li>
             </ul>
-          </div>
-        </div>
+          </StaggerItem>
+        </Stagger>
 
+        <Reveal delay={0.15}>
         <div className="border-t-2 border-border mt-12 pt-8 flex flex-col sm:flex-row justify-between items-center gap-4">
           <p className="text-text-muted text-xs">
             &copy; {currentYear} HKH Agency. All rights reserved. Work delivered under our previous name, Digivolve — now HKH.
           </p>
         </div>
+        </Reveal>
       </div>
     </footer>
   );

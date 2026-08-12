@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { User, LogOut, ArrowLeft, Shield } from "lucide-react";
 import { createClient } from "@/lib/supabase/client";
+import Reveal from "@/components/Reveal";
 
 export default function AccountPage() {
   const router = useRouter();
@@ -63,13 +64,16 @@ export default function AccountPage() {
     <main className="min-h-screen bg-bg flex flex-col justify-center items-center px-4 py-12 transition-colors duration-300">
       
       {/* Back button */}
-      <Link
-        href="/"
-        className="inline-flex items-center gap-2 font-bold text-sm text-text-muted hover:text-text mb-8 hover:underline decoration-accent-coral underline-offset-4"
-      >
-        <ArrowLeft className="w-4 h-4" /> Back to Website
-      </Link>
+      <Reveal y={16}>
+        <Link
+          href="/"
+          className="inline-flex items-center gap-2 font-bold text-sm text-text-muted hover:text-text mb-8 hover:underline decoration-accent-coral underline-offset-4"
+        >
+          <ArrowLeft className="w-4 h-4" /> Back to Website
+        </Link>
+      </Reveal>
 
+      <Reveal delay={0.1}>
       <div className="w-full max-w-md brutalist-card bg-surface p-8 space-y-6">
         
         {/* User Badge */}
@@ -123,6 +127,7 @@ export default function AccountPage() {
         </div>
 
       </div>
+      </Reveal>
     </main>
   );
 }

@@ -1,8 +1,9 @@
 "use client";
 
-import React, { useState } from "react";
-import { Star, ChevronLeft, ChevronRight, Quote } from "lucide-react";
+import React, { useEffect, useRef, useState } from "react";
+import { Star, ChevronLeft, ChevronRight, Quote, Pause, Play } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
+import { EASE } from "@/lib/animations";
 
 interface Testimonial {
   id: number;
@@ -40,19 +41,44 @@ const testimonials: Testimonial[] = [
   },
 ];
 
+const AUTOPLAY_MS = 6000;
+
 export default function ReviewsCarousel() {
   const [activeIndex, setActiveIndex] = useState(0);
+  const [direction, setDirection] = useState(1);
+  const [paused, setPaused] = useState(false);
+  const timerRef = useRef<ReturnType<typeof setInterval> | null>(null);
 
-  const handleNext = () => {
-    setActiveIndex((prev) => (prev + 1) % testimonials.length);
+  const goTo = (next: number, dir: number) => {
+    setDirection(dir);
+    setActiveIndex((next + testimonials.length) % testimonials.length);
   };
 
-  const handlePrev = () => {
-    setActiveIndex((prev) => (prev - 1 + testimonials.length) % testimonials.length);
+  const handleNext = () => goTo(activeIndex + 1, 1);
+  const handlePrev = () => goTo(activeIndex - 1, -1);
+
+  /* Auto-advance unless paused or hovered */
+  useEffect(() => {
+    if (paused) return;
+    timerRef.current = setInterval(handleNext, AUTOPLAY_MS);
+    return () => {
+      if (timerRef.current) clearInterval(timerRef.current);
+    };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [paused, activeIndex]);
+
+  const slideVariants = {
+    enter: (dir: number) => ({ opacity: 0, x: dir > 0 ? 60 : -60 }),
+    center: { opacity: 1, x: 0 },
+    exit: (dir: number) => ({ opacity: 0, x: dir > 0 ? -60 : 60 }),
   };
 
   return (
-    <div className="relative w-full max-w-4xl mx-auto px-4">
+    <div
+      className="relative w-full max-w-4xl mx-auto px-4"
+      onMouseEnter={() => setPaused(true)}
+      onMouseLeave={() => setPaused(false)}
+    >
       {/* Quotation Mark Accent badges */}
       <div className="absolute -top-6 -left-2 sm:-left-6 hidden sm:block">
         <span className="brutalist-badge-coral w-12 h-12 flex items-center justify-center text-white">
@@ -68,19 +94,28 @@ export default function ReviewsCarousel() {
 
       {/* Main Card */}
       <div className="brutalist-card bg-surface p-8 sm:p-12 md:p-16 text-left relative overflow-hidden min-h-[300px] flex flex-col justify-between">
-        <AnimatePresence mode="wait">
+        <AnimatePresence mode="wait" custom={direction}>
           <motion.div
             key={activeIndex}
-            initial={{ opacity: 0, x: 20 }}
-            animate={{ opacity: 1, x: 0 }}
-            exit={{ opacity: 0, x: -20 }}
-            transition={{ duration: 0.2 }}
+            custom={direction}
+            variants={slideVariants}
+            initial="enter"
+            animate="center"
+            exit="exit"
+            transition={{ duration: 0.35, ease: EASE }}
             className="space-y-6"
           >
             {/* Stars */}
             <div className="flex gap-1">
               {[...Array(testimonials[activeIndex].rating)].map((_, i) => (
-                <Star key={i} className="w-6 h-6 fill-accent-amber text-border" strokeWidth={2} />
+                <motion.span
+                  key={i}
+                  initial={{ opacity: 0, scale: 0.5, rotate: -30 }}
+                  animate={{ opacity: 1, scale: 1, rotate: 0 }}
+                  transition={{ delay: 0.1 + i * 0.07, type: "spring", stiffness: 300, damping: 15 }}
+                >
+                  <Star className="w-6 h-6 fill-accent-amber text-border" strokeWidth={2} />
+                </motion.span>
               ))}
             </div>
 
@@ -101,22 +136,59 @@ export default function ReviewsCarousel() {
           </motion.div>
         </AnimatePresence>
 
-        {/* Navigation Buttons */}
-        <div className="flex justify-end gap-3 mt-8 pt-6 border-t border-border/10">
-          <button
-            onClick={handlePrev}
-            className="w-10 h-10 border-2 border-border bg-bg text-text rounded-full flex items-center justify-center shadow-brutal-sm hover:translate-x-[1px] hover:translate-y-[1px] hover:shadow-none transition-all cursor-pointer"
-            aria-label="Previous review"
-          >
-            <ChevronLeft className="w-5 h-5" />
-          </button>
-          <button
-            onClick={handleNext}
-            className="w-10 h-10 border-2 border-border bg-bg text-text rounded-full flex items-center justify-center shadow-brutal-sm hover:translate-x-[1px] hover:translate-y-[1px] hover:shadow-none transition-all cursor-pointer"
-            aria-label="Next review"
-          >
-            <ChevronRight className="w-5 h-5" />
-          </button>
+        {/* Navigation Buttons + Autoplay toggle */}
+        <div className="flex justify-between items-center mt-8 pt-6 border-t border-border/10">
+          {/* Progress dots */}
+          <div className="flex items-center gap-2">
+            {testimonials.map((t, i) => (
+              <button
+                key={t.id}
+                onClick={() => goTo(i, i > activeIndex ? 1 : -1)}
+                aria-label={`Go to review ${i + 1}`}
+                className="relative w-8 h-2 cursor-pointer group"
+              >
+                <span
+                  className={`absolute inset-0 rounded-full border border-border transition-colors ${
+                    i === activeIndex ? "bg-accent-coral" : "bg-bg group-hover:bg-accent-sky/40"
+                  }`}
+                />
+                {/* Autoplay progress fill on the active dot */}
+                {i === activeIndex && !paused && (
+                  <motion.span
+                    key={`fill-${activeIndex}-${Date.now()}`}
+                    initial={{ scaleX: 0 }}
+                    animate={{ scaleX: 1 }}
+                    transition={{ duration: AUTOPLAY_MS / 1000, ease: "linear" }}
+                    className="absolute inset-0 rounded-full bg-text/40 origin-left"
+                  />
+                )}
+              </button>
+            ))}
+          </div>
+
+          <div className="flex items-center gap-3">
+            <button
+              onClick={() => setPaused((p) => !p)}
+              aria-label={paused ? "Play reviews" : "Pause reviews"}
+              className="w-9 h-9 border-2 border-border bg-bg text-text rounded-full flex items-center justify-center shadow-brutal-sm hover:translate-x-[1px] hover:translate-y-[1px] hover:shadow-none transition-all cursor-pointer"
+            >
+              {paused ? <Play className="w-4 h-4" /> : <Pause className="w-4 h-4" />}
+            </button>
+            <button
+              onClick={handlePrev}
+              className="w-10 h-10 border-2 border-border bg-bg text-text rounded-full flex items-center justify-center shadow-brutal-sm hover:translate-x-[1px] hover:translate-y-[1px] hover:shadow-none transition-all cursor-pointer"
+              aria-label="Previous review"
+            >
+              <ChevronLeft className="w-5 h-5" />
+            </button>
+            <button
+              onClick={handleNext}
+              className="w-10 h-10 border-2 border-border bg-bg text-text rounded-full flex items-center justify-center shadow-brutal-sm hover:translate-x-[1px] hover:translate-y-[1px] hover:shadow-none transition-all cursor-pointer"
+              aria-label="Next review"
+            >
+              <ChevronRight className="w-5 h-5" />
+            </button>
+          </div>
         </div>
       </div>
     </div>

@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 import { Lock, Mail, ShieldAlert, AlertCircle, ArrowLeft, UserPlus, CheckCircle2 } from "lucide-react";
 import Link from "next/link";
 import { createClient } from "@/lib/supabase/client";
+import Reveal from "@/components/Reveal";
 
 const GoogleIcon = () => (
   <svg className="w-5 h-5 flex-shrink-0" viewBox="0 0 24 24" fill="currentColor">
@@ -130,17 +131,20 @@ export default function LoginPage() {
     <main className="min-h-screen bg-bg flex flex-col justify-center items-center px-4 py-12 transition-colors duration-300">
       
       {/* Back button */}
-      <Link
-        href="/"
-        className="inline-flex items-center gap-2 px-4 py-2 border-2 border-border bg-surface text-text rounded-full font-bold text-xs shadow-brutal hover:shadow-brutal-sm hover:translate-y-[2px] active:translate-y-[4px] active:shadow-none transition-all duration-150 mb-8"
-      >
-        <ArrowLeft className="w-4 h-4 text-accent-coral" /> Back to Home
-      </Link>
+      <Reveal y={16}>
+        <Link
+          href="/"
+          className="inline-flex items-center gap-2 px-4 py-2 border-2 border-border bg-surface text-text rounded-full font-bold text-xs shadow-brutal hover:shadow-brutal-sm hover:translate-y-[2px] active:translate-y-[4px] active:shadow-none transition-all duration-150 mb-8"
+        >
+          <ArrowLeft className="w-4 h-4 text-accent-coral" /> Back to Home
+        </Link>
+      </Reveal>
 
       <div className="w-full max-w-md">
         
         {/* Logo Mark */}
-        <div className="text-center mb-8">
+        <Reveal delay={0.1}>
+          <div className="text-center mb-8">
           <Link href="/" className="inline-flex items-center gap-2">
             <span className="brutalist-badge-coral w-10 h-10 flex items-center justify-center font-display font-bold text-xl text-white">
               H
@@ -153,8 +157,10 @@ export default function LoginPage() {
             Portal Access
           </p>
         </div>
+        </Reveal>
 
         {/* Form Card */}
+        <Reveal delay={0.2}>
         <div className="brutalist-card bg-surface p-8 rounded-xl relative overflow-hidden">
           <div className="absolute top-0 right-0 w-24 h-24 bg-accent-sky/10 rounded-full blur-2xl -z-10" />
 
@@ -356,6 +362,7 @@ export default function LoginPage() {
           )}
 
         </div>
+        </Reveal>
 
       </div>
     </main>

@@ -21,6 +21,8 @@ import {
   Lock
 } from "lucide-react";
 import { createClient } from "@/lib/supabase/client";
+import Reveal from "@/components/Reveal";
+import { Stagger, StaggerItem } from "@/components/Stagger";
 
 // Recharts components loaded dynamically to prevent SSR hydration errors
 import {
@@ -264,12 +266,15 @@ export default function AdminPage() {
   if (!isAdmin) {
     return (
       <main className="min-h-screen bg-bg flex flex-col justify-center items-center px-4 py-12 transition-colors duration-300">
-        <Link
-          href="/"
-          className="inline-flex items-center gap-2 px-4 py-2 border-2 border-border bg-surface text-text rounded-full font-bold text-xs shadow-brutal hover:shadow-brutal-sm hover:translate-y-[2px] active:translate-y-[4px] active:shadow-none transition-all duration-150 mb-8"
-        >
-          <ArrowLeft className="w-4 h-4 text-accent-coral" /> Back to Home
-        </Link>
+        <Reveal y={16}>
+          <Link
+            href="/"
+            className="inline-flex items-center gap-2 px-4 py-2 border-2 border-border bg-surface text-text rounded-full font-bold text-xs shadow-brutal hover:shadow-brutal-sm hover:translate-y-[2px] active:translate-y-[4px] active:shadow-none transition-all duration-150 mb-8"
+          >
+            <ArrowLeft className="w-4 h-4 text-accent-coral" /> Back to Home
+          </Link>
+        </Reveal>
+        <Reveal delay={0.1}>
         <div className="w-full max-w-md brutalist-card bg-surface p-8 space-y-6">
           <div className="text-center space-y-2">
             <span className="brutalist-badge-coral w-10 h-10 flex items-center justify-center font-display font-bold text-xl text-white mx-auto">
@@ -334,6 +339,7 @@ export default function AdminPage() {
             </button>
           </form>
         </div>
+        </Reveal>
       </main>
     );
   }
@@ -381,19 +387,21 @@ export default function AdminPage() {
           
           {/* Demo Alert Banner */}
           {isDemoData && (
+            <Reveal y={20}>
             <div className="p-4 border-2 border-border bg-accent-amber text-text rounded-xl flex items-center gap-3 text-sm font-semibold shadow-brutal-sm">
               <Info className="w-5 h-5 flex-shrink-0" />
               <p>
                 Showing DEMO submissions. Submit the public contact form on the website to populate this dashboard with real live leads!
               </p>
             </div>
+            </Reveal>
           )}
 
           {/* Stat Summary Cards */}
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+          <Stagger className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
             
             {/* Total Leads */}
-            <div className="brutalist-card p-6 bg-surface flex items-start gap-4">
+            <StaggerItem className="brutalist-card p-6 bg-surface flex items-start gap-4">
               <span className="brutalist-badge-coral w-12 h-12 flex-shrink-0">
                 <Users className="w-5 h-5 text-white" />
               </span>
@@ -403,10 +411,10 @@ export default function AdminPage() {
                   {totalSubmissions}
                 </span>
               </div>
-            </div>
+            </StaggerItem>
 
             {/* Leads This Week */}
-            <div className="brutalist-card p-6 bg-surface flex items-start gap-4">
+            <StaggerItem className="brutalist-card p-6 bg-surface flex items-start gap-4">
               <span className="brutalist-badge-sky w-12 h-12 flex-shrink-0">
                 <Calendar className="w-5 h-5 text-text" />
               </span>
@@ -416,10 +424,10 @@ export default function AdminPage() {
                   {thisWeekSubmissions}
                 </span>
               </div>
-            </div>
+            </StaggerItem>
 
             {/* Popular Focus */}
-            <div className="brutalist-card p-6 bg-surface flex items-start gap-4">
+            <StaggerItem className="brutalist-card p-6 bg-surface flex items-start gap-4">
               <span className="brutalist-badge-coral w-12 h-12 flex-shrink-0 bg-accent-amber">
                 <Briefcase className="w-5 h-5 text-text" />
               </span>
@@ -429,10 +437,10 @@ export default function AdminPage() {
                   {popularFocus}
                 </span>
               </div>
-            </div>
+            </StaggerItem>
 
             {/* Popular Budget */}
-            <div className="brutalist-card p-6 bg-surface flex items-start gap-4">
+            <StaggerItem className="brutalist-card p-6 bg-surface flex items-start gap-4">
               <span className="brutalist-badge-coral w-12 h-12 flex-shrink-0">
                 <DollarSign className="w-5 h-5 text-white" />
               </span>
@@ -442,15 +450,15 @@ export default function AdminPage() {
                   {popularBudget}
                 </span>
               </div>
-            </div>
+            </StaggerItem>
 
-          </div>
+          </Stagger>
 
           {/* Visual Insight Section (Recharts) */}
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
             
             {/* Chart Card */}
-            <div className="lg:col-span-5 brutalist-card bg-surface p-6 flex flex-col justify-between">
+            <Reveal x={-40} className="lg:col-span-5 brutalist-card bg-surface p-6 flex flex-col justify-between">
               <div>
                 <h3 className="font-display font-bold text-lg text-text mb-1">Budget Allocation</h3>
                 <p className="text-xs text-text-muted mb-6">Distribution of inbound lead budget targets.</p>
@@ -483,10 +491,10 @@ export default function AdminPage() {
                   </div>
                 )}
               </div>
-            </div>
+            </Reveal>
 
             {/* Quick Actions / Security Card */}
-            <div className="lg:col-span-7 brutalist-card bg-surface p-6 flex flex-col justify-between">
+            <Reveal x={40} delay={0.1} className="lg:col-span-7 brutalist-card bg-surface p-6 flex flex-col justify-between">
               <div className="space-y-4">
                 <h3 className="font-display font-bold text-lg text-text">Database Controls</h3>
                 <p className="text-sm text-text-muted leading-relaxed">
@@ -522,12 +530,12 @@ export default function AdminPage() {
                   Reset Dashboard Filters
                 </button>
               </div>
-            </div>
+            </Reveal>
 
           </div>
 
           {/* Lead Submissions Table Section */}
-          <div className="brutalist-card bg-surface overflow-hidden">
+          <Reveal delay={0.1} className="brutalist-card bg-surface overflow-hidden">
             
             {/* Filters Bar */}
             <div className="p-6 border-b-2 border-border bg-bg/20 flex flex-col md:flex-row gap-4 items-center justify-between">
@@ -665,7 +673,7 @@ export default function AdminPage() {
               {isDemoData && <span>Database status: Fallback Demo Data Active</span>}
             </div>
 
-          </div>
+          </Reveal>
 
         </div>
       </main>

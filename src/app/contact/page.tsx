@@ -5,6 +5,8 @@ import Link from "next/link";
 import { useSearchParams } from "next/navigation";
 import { Mail, Phone, MapPin, Send, AlertCircle, CheckCircle2, ArrowLeft } from "lucide-react";
 import confetti from "canvas-confetti";
+import Reveal from "@/components/Reveal";
+import { Stagger, StaggerItem } from "@/components/Stagger";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import WhatsAppButton from "@/components/WhatsAppButton";
@@ -96,28 +98,32 @@ function ContactContent() {
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
         
         {/* Breadcrumb Back link */}
-        <Link
-          href="/"
-          className="inline-flex items-center gap-2 px-4 py-2 border-2 border-border bg-surface text-text rounded-full font-bold text-xs shadow-brutal hover:shadow-brutal-sm hover:translate-y-[2px] active:translate-y-[4px] active:shadow-none transition-all duration-150 mb-12 w-fit"
-        >
-          <ArrowLeft className="w-4 h-4 text-accent-coral" /> Back to Home
-        </Link>
+        <Reveal y={16}>
+          <Link
+            href="/"
+            className="inline-flex items-center gap-2 px-4 py-2 border-2 border-border bg-surface text-text rounded-full font-bold text-xs shadow-brutal hover:shadow-brutal-sm hover:translate-y-[2px] active:translate-y-[4px] active:shadow-none transition-all duration-150 mb-12 w-fit"
+          >
+            <ArrowLeft className="w-4 h-4 text-accent-coral" /> Back to Home
+          </Link>
+        </Reveal>
 
         {/* Heading */}
-        <div className="mb-16 text-center max-w-3xl mx-auto">
-          <span className="text-sm font-bold text-accent-coral tracking-widest uppercase block mb-2">Let's Connect</span>
-          <h1 className="font-display text-4xl sm:text-5xl font-normal tracking-tight text-text">
-            Scale Your Brand <span className="font-extrabold text-accent-sky">Now</span>
-          </h1>
-          <p className="text-text-muted mt-3 text-sm sm:text-base leading-relaxed">
-            Fill out the form below, and we'll evaluate your project within 24 hours. Directly execute your visual and technical goals.
-          </p>
-        </div>
+        <Reveal delay={0.1}>
+          <div className="mb-16 text-center max-w-3xl mx-auto">
+            <span className="text-sm font-bold text-accent-coral tracking-widest uppercase block mb-2">Let's Connect</span>
+            <h1 className="font-display text-4xl sm:text-5xl font-normal tracking-tight text-text">
+              Scale Your Brand <span className="font-extrabold text-accent-sky">Now</span>
+            </h1>
+            <p className="text-text-muted mt-3 text-sm sm:text-base leading-relaxed">
+              Fill out the form below, and we'll evaluate your project within 24 hours. Directly execute your visual and technical goals.
+            </p>
+          </div>
+        </Reveal>
 
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 items-start">
           
           {/* Form Column */}
-          <div className="lg:col-span-7">
+          <Reveal className="lg:col-span-7" x={-40}>
             <div className="brutalist-card bg-surface p-8 sm:p-10 relative overflow-hidden">
               <div className="absolute top-0 right-0 w-24 h-24 bg-accent-sky/10 rounded-full blur-2xl -z-10" />
 
@@ -276,15 +282,17 @@ function ContactContent() {
                 </form>
               )}
             </div>
-          </div>
+          </Reveal>
 
           {/* Info & Map Column */}
-          <div className="lg:col-span-5 space-y-8">
+          <Reveal className="lg:col-span-5 space-y-8" x={40} delay={0.1}>
+
             {/* Direct Info */}
             <div className="brutalist-card p-6 bg-surface space-y-6">
               <h3 className="font-display font-bold text-xl text-text">Direct Contacts</h3>
               
-              <div className="space-y-4">
+              <Stagger className="space-y-4">
+                <StaggerItem>
                 <a
                   href="mailto:hasanshahirconnect@gmail.com"
                   className="flex items-start gap-4 p-3 border border-border/10 bg-bg hover:border-border rounded-xl transition-all group"
@@ -300,6 +308,8 @@ function ContactContent() {
                   </div>
                 </a>
 
+                </StaggerItem>
+                <StaggerItem>
                 <a
                   href="https://wa.me/923330405008"
                   target="_blank"
@@ -316,7 +326,8 @@ function ContactContent() {
                     </span>
                   </div>
                 </a>
-
+                </StaggerItem>
+                <StaggerItem>
                 <div className="flex items-start gap-4 p-3 border border-border/10 bg-bg rounded-xl">
                   <span className="brutalist-badge-coral w-10 h-10 flex-shrink-0 bg-accent-amber">
                     <MapPin className="w-4 h-4 text-text" />
@@ -328,7 +339,8 @@ function ContactContent() {
                     </span>
                   </div>
                 </div>
-              </div>
+                </StaggerItem>
+              </Stagger>
             </div>
 
             {/* Map Embed */}
@@ -342,7 +354,7 @@ function ContactContent() {
                 title="HKH Location Map"
               />
             </div>
-          </div>
+          </Reveal>
 
         </div>
       </div>
