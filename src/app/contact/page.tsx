@@ -55,12 +55,27 @@ function ContactContent() {
         throw new Error(error.message);
       }
 
+      // Fire-and-forget: trigger the automated confirmation + owner notification emails.
+      // The Edge Function must be deployed first (see supabase/functions/send-lead-email
+      // and the README). Failures here never block the form success screen.
+      supabase.functions.invoke("send-lead-email", {
+        body: {
+          fullName,
+          email,
+          projectFocus,
+          budgetRange,
+          message,
+        },
+      }).then(({ error: fnError }) => {
+        if (fnError) console.error("Lead email trigger failed:", fnError);
+      });
+
       setSuccess(true);
       confetti({
         particleCount: 100,
         spread: 70,
         origin: { y: 0.6 },
-        colors: ["#F4552F", "#2FA9D6", "#F2B705", "#16151A"]
+        colors: ["#FD0178", "#0000FF", "#16151A", "#FAFAF6"]
       });
 
       setFullName("");

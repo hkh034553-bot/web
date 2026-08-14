@@ -1,8 +1,9 @@
 import React from "react";
 import Link from "next/link";
-import { Mail, Phone, ArrowUpRight } from "lucide-react";
+import { Mail, Phone, ArrowUpRight, FileText } from "lucide-react";
 import Reveal from "@/components/Reveal";
 import { Stagger, StaggerItem } from "@/components/Stagger";
+import { BASE_PATH } from "@/lib/basePath";
 
 const GithubIcon = () => (
   <svg className="w-4 h-4 fill-current" viewBox="0 0 24 24">
@@ -96,6 +97,17 @@ export default function Footer() {
                 <Link href="/contact" className="text-sm text-text-muted hover:text-text hover:underline underline-offset-4">
                   Contact
                 </Link>
+              </li>
+              <li>
+                <a
+                  href={`${BASE_PATH}/portfolio.pdf`}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="inline-flex items-center gap-1.5 text-sm text-text-muted hover:text-text hover:underline underline-offset-4 group"
+                >
+                  <FileText className="w-3.5 h-3.5 text-accent-pink" />
+                  Portfolio
+                </a>
               </li>
               <li>
                 <Link href="/login" className="text-sm text-text-muted hover:text-text hover:underline underline-offset-4">

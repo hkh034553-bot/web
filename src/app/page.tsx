@@ -28,6 +28,7 @@ import Reveal from "@/components/Reveal";
 import { Stagger, StaggerItem } from "@/components/Stagger";
 import TiltCard, { Magnetic } from "@/components/TiltCard";
 import Marquee from "@/components/Marquee";
+import TeamSection from "@/components/TeamSection";
 import HeroInteractive from "@/components/blocks/HeroInteractive";
 import { EASE } from "@/lib/animations";
 
@@ -177,7 +178,7 @@ export default function Home() {
         {/* HERO SECTION — interactive: hover the service tabs, tilt the dashboard, scroll for parallax */}
         <HeroInteractive
           badge={
-            <span className="inline-flex items-center gap-2 px-4 py-1.5 border-2 border-border bg-accent-amber text-text rounded-full font-display font-bold text-sm tracking-wide shadow-brutal-sm">
+            <span className="inline-flex items-center gap-2 px-4 py-1.5 border-2 border-border bg-flow-gradient text-white rounded-full font-display font-bold text-sm tracking-wide shadow-brutal-sm">
               <Sparkles className="w-4 h-4 fill-current" />
               Creative & Dev Agency
             </span>
@@ -187,9 +188,9 @@ export default function Home() {
           primaryCta={{ text: "Get a Free Quote", href: "/contact" }}
           secondaryCta={{ text: "Explore Services", href: "/services" }}
           trustItems={[
-            { icon: CheckCircle2, label: "Clear Pricing", accent: "text-accent-coral" },
-            { icon: CheckCircle2, label: "Fast Turnaround", accent: "text-accent-sky" },
-            { icon: CheckCircle2, label: "Direct Communication", accent: "text-accent-amber" },
+            { icon: CheckCircle2, label: "Clear Pricing", accent: "text-accent-pink" },
+            { icon: CheckCircle2, label: "Fast Turnaround", accent: "text-accent-blue" },
+            { icon: CheckCircle2, label: "Direct Communication", accent: "text-accent-pink" },
           ]}
           stats={[
             { value: 3.2, decimals: 1, suffix: "M+", label: "Impressions" },
@@ -302,7 +303,7 @@ export default function Home() {
                         animate={{ rotate: isActive ? 360 : 0, scale: isActive ? 1.1 : 1 }}
                         transition={{ type: "spring", stiffness: 200, damping: 15 }}
                         className={`absolute -top-3 -right-3 w-10 h-10 border-2 border-border font-display font-bold rounded-full flex items-center justify-center shadow-brutal-sm text-sm ${
-                          isActive ? "bg-accent-coral text-white" : "bg-accent-amber text-text"
+                          isActive ? "bg-accent-pink text-white" : "bg-accent-blue text-white"
                         }`}
                       >
                         {step.num}
@@ -504,6 +505,9 @@ export default function Home() {
           </div>
         </section>
 
+        {/* TEAM */}
+        <TeamSection />
+
         {/* REVIEWS CAROUSEL */}
         <section id="reviews" className="py-20 border-t-2 border-border text-center overflow-hidden">
           <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
@@ -522,32 +526,35 @@ export default function Home() {
           </div>
         </section>
 
-        {/* CTA BANNER */}
-        <section className="py-16 md:py-24 border-t-2 border-border bg-accent-coral text-white relative overflow-hidden">
-          <div className="absolute inset-0 bg-[linear-gradient(to_right,rgba(22,21,26,0.15)_1px,transparent_1px),linear-gradient(to_bottom,rgba(22,21,26,0.15)_1px,transparent_1px)] bg-[size:3rem_3rem] -z-10 pointer-events-none" />
+        {/* CTA BANNER — bold ink canvas, createwithflow-style */}
+        <section className="py-16 md:py-24 border-t-2 border-border bg-ink text-white relative overflow-hidden">
+          <div className="absolute inset-0 bg-[linear-gradient(to_right,rgba(253,1,120,0.10)_1px,transparent_1px),linear-gradient(to_bottom,rgba(0,0,255,0.10)_1px,transparent_1px)] bg-[size:3rem_3rem] -z-10 pointer-events-none" />
+          <div aria-hidden className="absolute -top-32 left-1/4 w-96 h-96 rounded-full bg-accent-pink/25 blur-3xl -z-10 pointer-events-none" />
+          <div aria-hidden className="absolute -bottom-32 right-1/4 w-96 h-96 rounded-full bg-accent-blue/25 blur-3xl -z-10 pointer-events-none" />
           <Reveal>
             <div className="mx-auto max-w-5xl px-4 sm:px-6 lg:px-8 text-center space-y-8 relative z-10">
-              <h2 className="font-display font-bold text-3xl sm:text-5xl md:text-6xl text-text leading-tight max-w-4xl mx-auto">
-                Ready to <span className="font-extrabold underline decoration-accent-amber underline-offset-8">Supercharge</span> Your Marketing & Development?
+              <h2 className="font-display font-bold text-3xl sm:text-5xl md:text-6xl text-white leading-tight max-w-4xl mx-auto">
+                Ready to <span className="text-flow-gradient font-extrabold">Supercharge</span> Your Marketing & Development?
               </h2>
-              <p className="text-text max-w-2xl mx-auto text-lg md:text-xl font-medium">
+              <p className="text-white/70 max-w-2xl mx-auto text-lg md:text-xl font-medium">
                 Get direct execution with a small, focused team. No corporate layers, just high-converting results.
               </p>
               <div className="pt-4 flex flex-col sm:flex-row items-center justify-center gap-4">
                 <Magnetic strength={0.25}>
                   <Link
                     href="/contact"
-                    className="brutalist-btn bg-surface text-text border-2 border-border rounded-full px-8 py-4 font-bold shadow-[4px_4px_0_#16151A] hover:translate-x-[2px] hover:translate-y-[2px] hover:shadow-[2px_2px_0_#16151A] transition-all duration-150 w-full sm:w-auto text-center"
+                    className="brutalist-btn bg-flow-gradient text-white border-2 border-white/20 rounded-full px-8 py-4 font-bold shadow-[4px_4px_0_#FD0178] hover:translate-x-[2px] hover:translate-y-[2px] hover:shadow-[2px_2px_0_#FD0178] transition-all duration-150 w-full sm:w-auto text-center"
                   >
                     Get a Free Quote
                   </Link>
                 </Magnetic>
                 <Magnetic strength={0.25}>
                   <Link
-                    href="/services"
-                    className="brutalist-btn bg-accent-amber text-text border-2 border-border rounded-full px-8 py-4 font-bold shadow-[4px_4px_0_#16151A] hover:translate-x-[2px] hover:translate-y-[2px] hover:shadow-[2px_2px_0_#16151A] transition-all duration-150 w-full sm:w-auto text-center"
+                    href="/portfolio.pdf"
+                    target="_blank"
+                    className="brutalist-btn bg-surface text-text border-2 border-border rounded-full px-8 py-4 font-bold shadow-[4px_4px_0_#FD0178] hover:translate-x-[2px] hover:translate-y-[2px] hover:shadow-[2px_2px_0_#FD0178] transition-all duration-150 w-full sm:w-auto text-center"
                   >
-                    Calculate Investment
+                    View Our Portfolio
                   </Link>
                 </Magnetic>
               </div>

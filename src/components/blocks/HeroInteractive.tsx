@@ -33,11 +33,12 @@ import { EASE } from "@/lib/animations";
 /* ------------------------------------------------------------------ */
 
 const ROTATING_WORDS = [
-  { text: "Branding", color: "text-accent-coral" },
-  { text: "Websites", color: "text-accent-sky" },
-  { text: "Social Campaigns", color: "text-accent-amber" },
-  { text: "Mobile Apps", color: "text-accent-coral" },
-  { text: "Paid Ads", color: "text-accent-sky" },
+  { text: "Branding", color: "text-accent-pink" },
+  { text: "Websites", color: "text-accent-blue" },
+  { text: "Social Campaigns", color: "text-accent-pink" },
+  { text: "Mobile Apps", color: "text-accent-blue" },
+  { text: "Paid Ads", color: "text-accent-pink" },
+  { text: "Video & Content", color: "text-accent-blue" },
 ];
 
 /* ------------------------------------------------------------------ */
@@ -77,7 +78,7 @@ const SERVICES: Service[] = [
     channels: [
       { name: "Instagram", pct: 86, color: "bg-accent-coral" },
       { name: "Facebook", pct: 74, color: "bg-accent-sky" },
-      { name: "TikTok", pct: 68, color: "bg-accent-amber" },
+      { name: "TikTok", pct: 68, color: "bg-accent-blue" },
     ],
     bars: [34, 58, 46, 72, 92],
     kpis: [
@@ -98,7 +99,7 @@ const SERVICES: Service[] = [
     channels: [
       { name: "Google Ads", pct: 92, color: "bg-accent-sky" },
       { name: "Meta Ads", pct: 81, color: "bg-accent-coral" },
-      { name: "LinkedIn Ads", pct: 64, color: "bg-accent-amber" },
+      { name: "LinkedIn Ads", pct: 64, color: "bg-accent-pink" },
     ],
     bars: [28, 44, 62, 78, 96],
     kpis: [
@@ -119,7 +120,7 @@ const SERVICES: Service[] = [
     channels: [
       { name: "Page Speed", pct: 98, color: "bg-accent-sky" },
       { name: "SEO Score", pct: 91, color: "bg-accent-coral" },
-      { name: "Conversion", pct: 12.4, color: "bg-accent-amber" },
+      { name: "Conversion", pct: 12.4, color: "bg-accent-blue" },
     ],
     bars: [40, 66, 52, 84, 70],
     kpis: [
@@ -140,7 +141,7 @@ const SERVICES: Service[] = [
     channels: [
       { name: "Recognition", pct: 88, color: "bg-accent-coral" },
       { name: "Premium Voice", pct: 95, color: "bg-accent-sky" },
-      { name: "Recall", pct: 79, color: "bg-accent-amber" },
+      { name: "Recall", pct: 79, color: "bg-accent-blue" },
     ],
     bars: [32, 50, 68, 80, 90],
     kpis: [
@@ -267,9 +268,9 @@ function Dashboard({ service }: { service: Service }) {
     <div className="brutalist-card bg-surface overflow-hidden text-left shadow-brutal-lg">
       {/* Browser chrome */}
       <div className="flex items-center gap-3 px-5 py-3.5 border-b-2 border-border bg-bg/60">
-        <span className="w-3 h-3 rounded-full bg-accent-coral border border-border" />
-        <span className="w-3 h-3 rounded-full bg-accent-amber border border-border" />
-        <span className="w-3 h-3 rounded-full bg-accent-sky border border-border" />
+        <span className="w-3 h-3 rounded-full bg-accent-pink border border-border" />
+        <span className="w-3 h-3 rounded-full bg-accent-blue border border-border" />
+        <span className="w-3 h-3 rounded-full bg-accent-pink border border-border" />
         <div className="ml-3 flex-1 max-w-xs px-3 py-1 rounded-full border-2 border-border bg-surface text-[10px] font-bold text-text-muted truncate">
           {service.url}
         </div>
@@ -292,7 +293,7 @@ function Dashboard({ service }: { service: Service }) {
                   <service.icon className={`w-5 h-5 ${service.iconClass}`} />
                 </span>
                 <div>
-                  <p className="text-[10px] font-bold text-accent-coral uppercase tracking-widest">
+                  <p className="text-[10px] font-bold text-accent-pink uppercase tracking-widest">
                     Live Performance
                   </p>
                   <h4 className="font-display font-bold text-xl text-text mt-0.5">
@@ -328,7 +329,7 @@ function Dashboard({ service }: { service: Service }) {
                 <p className="text-[10px] font-bold text-text uppercase tracking-wider">
                   Weekly Conversions
                 </p>
-                <span className="text-[9px] font-bold text-accent-sky">Live</span>
+                <span className="text-[9px] font-bold text-accent-blue">Live</span>
               </div>
               <div className="flex items-end justify-between gap-2 h-20">
                 {service.bars.map((h, i) => (
@@ -337,7 +338,7 @@ function Dashboard({ service }: { service: Service }) {
                     initial={{ height: "6%" }}
                     animate={{ height: `${h}%` }}
                     transition={{ delay: 0.3 + i * 0.07, duration: 0.6, ease: EASE }}
-                    className={`flex-1 ${i === service.bars.length - 1 ? "bg-accent-amber" : i % 2 === 0 ? "bg-accent-coral" : "bg-accent-sky"} rounded-t-md border border-border`}
+                    className={`flex-1 ${i === service.bars.length - 1 ? "bg-accent-blue" : i % 2 === 0 ? "bg-accent-pink" : "bg-accent-blue"} rounded-t-md border border-border`}
                     style={{ minHeight: 6 }}
                   />
                 ))}
@@ -369,7 +370,7 @@ function Dashboard({ service }: { service: Service }) {
               transition={{ delay: 0.4, duration: 0.5 }}
               className="text-[10px] text-text-muted leading-relaxed"
             >
-              <span className="text-accent-coral font-bold">Zero templates.</span> Direct
+              <span className="text-accent-pink font-bold">Zero templates.</span> Direct
               execution, premium standard — tracked live for every client.
             </motion.p>
           </div>
@@ -428,7 +429,7 @@ export default function HeroInteractive({
   /* Cursor spotlight following the mouse across the whole section */
   const spotlightX = useTransform(sNX, [0, 1], [0, 100]);
   const spotlightY = useTransform(sNY, [0, 1], [0, 100]);
-  const spotlight = useMotionTemplate`radial-gradient(520px circle at ${spotlightX}% ${spotlightY}%, rgba(244,85,47,0.14), rgba(47,169,214,0.07) 45%, transparent 75%)`;
+  const spotlight = useMotionTemplate`radial-gradient(520px circle at ${spotlightX}% ${spotlightY}%, rgba(253,1,120,0.16), rgba(0,0,255,0.09) 45%, transparent 75%)`;
 
   /* Rotating headline word */
   useEffect(() => {
@@ -460,7 +461,11 @@ export default function HeroInteractive({
       className="relative pt-24 pb-20 md:pt-28 md:pb-24 overflow-hidden"
     >
       {/* Background grid illustration */}
-      <div className="absolute inset-0 bg-[linear-gradient(to_right,rgba(22,21,26,0.05)_1px,transparent_1px),linear-gradient(to_bottom,rgba(22,21,26,0.05)_1px,transparent_1px)] dark:bg-[linear-gradient(to_right,rgba(246,244,239,0.03)_1px,transparent_1px),linear-gradient(to_bottom,rgba(246,244,239,0.03)_1px,transparent_1px)] bg-[size:4rem_4rem] [mask-image:radial-gradient(ellipse_70%_60%_at_50%_40%,#000_65%,transparent_100%)] -z-20 pointer-events-none" />
+      <div className="absolute inset-0 bg-[linear-gradient(to_right,rgba(22,21,26,0.06)_1px,transparent_1px),linear-gradient(to_bottom,rgba(22,21,26,0.06)_1px,transparent_1px)] dark:bg-[linear-gradient(to_right,rgba(246,244,239,0.03)_1px,transparent_1px),linear-gradient(to_bottom,rgba(246,244,239,0.03)_1px,transparent_1px)] bg-[size:4rem_4rem] [mask-image:radial-gradient(ellipse_70%_60%_at_50%_40%,#000_65%,transparent_100%)] -z-20 pointer-events-none" />
+
+      {/* Pink + blue corner glows (createwithflow duo) */}
+      <div aria-hidden className="absolute -top-24 -left-24 w-[28rem] h-[28rem] rounded-full bg-accent-pink/20 dark:bg-accent-pink/10 blur-3xl -z-10 pointer-events-none" />
+      <div aria-hidden className="absolute -bottom-32 -right-24 w-[32rem] h-[32rem] rounded-full bg-accent-blue/15 dark:bg-accent-blue/10 blur-3xl -z-10 pointer-events-none" />
 
       {/* Cursor-following spotlight glow */}
       <motion.div
@@ -474,7 +479,7 @@ export default function HeroInteractive({
         sx={sNX}
         sy={sNY}
         size={52}
-        color="bg-accent-coral/25 dark:bg-accent-coral/15"
+        color="bg-accent-pink/25 dark:bg-accent-pink/15"
         parallax={26}
         className="top-[12%] left-[4%]"
         baseRotateX={20}
@@ -486,7 +491,7 @@ export default function HeroInteractive({
         sx={sNX}
         sy={sNY}
         size={72}
-        color="bg-accent-sky/25 dark:bg-accent-sky/15"
+        color="bg-accent-blue/25 dark:bg-accent-blue/15"
         parallax={38}
         className="top-[18%] right-[3%]"
         baseRotateX={30}
@@ -498,7 +503,7 @@ export default function HeroInteractive({
         sx={sNX}
         sy={sNY}
         size={44}
-        color="bg-accent-amber/30 dark:bg-accent-amber/15"
+        color="bg-accent-pink/30 dark:bg-accent-pink/15"
         parallax={30}
         className="bottom-[14%] left-[7%]"
         baseRotateX={-18}
@@ -641,13 +646,13 @@ export default function HeroInteractive({
                   {/* Back page 2 — furthest, peeking from behind */}
                   <div
                     aria-hidden
-                    className="absolute inset-0 rounded-2xl border-2 border-border bg-accent-sky/25 dark:bg-accent-sky/10"
+                    className="absolute inset-0 rounded-2xl border-2 border-border bg-accent-blue/25 dark:bg-accent-blue/10"
                     style={{ transform: "translateZ(-70px) translate(-14px, -10px) rotate(1.6deg)" }}
                   />
                   {/* Back page 1 — closer */}
                   <div
                     aria-hidden
-                    className="absolute inset-0 rounded-2xl border-2 border-border bg-accent-amber/25 dark:bg-accent-amber/10"
+                    className="absolute inset-0 rounded-2xl border-2 border-border bg-accent-pink/25 dark:bg-accent-pink/10"
                     style={{ transform: "translateZ(-42px) translate(-7px, -5px) rotate(0.8deg)" }}
                   />
 

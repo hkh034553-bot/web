@@ -70,7 +70,7 @@ export function ThemeProvider({ children }: { children: React.ReactNode }) {
           paddingLeft: paddingLeftValue
         }}
         transition={{ type: "spring", stiffness: 220, damping: 24 }}
-        className="min-h-screen flex flex-col w-full bg-[#FAFAF6] dark:bg-[#17151C] overflow-x-hidden"
+        className="min-h-screen flex flex-col w-full bg-[#FAFAF6] dark:bg-[#14141A] overflow-x-hidden"
       >
         {children}
       </motion.div>

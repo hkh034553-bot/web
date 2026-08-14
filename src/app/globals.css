@@ -2,30 +2,48 @@
 
 @custom-variant dark (&:where(.dark, .dark *));
 
+/* ------------------------------------------------------------------
+   Brand palette — createwithflow.com duo: hot pink #FD0178 + pure blue #0000FF
+   (legacy names kept for zero-churn compatibility:
+    accent-coral -> pink, accent-sky -> blue, accent-amber -> gold)
+------------------------------------------------------------------- */
 :root {
   --bg: #FAFAF6;
   --surface: #FFFFFF;
   --text: #16151A;
   --text-muted: #5B5A63;
   --border: #16151A;
-  --accent-coral: #F4552F;
-  --accent-sky: #2FA9D6;
-  --accent-amber: #F2B705;
-  
+
+  /* Primary duo (createwithflow) */
+  --accent-coral: #FD0178; /* hot pink  */
+  --accent-sky: #0000FF;   /* pure blue */
+  /* Supporting gold — used sparingly (stars, warnings, sun icon) */
+  --accent-amber: #F5B800;
+
+  /* Semantic aliases */
+  --accent-pink: var(--accent-coral);
+  --accent-blue: var(--accent-sky);
+  --accent-gold: var(--accent-amber);
+
   --shadow-color: rgba(22, 21, 26, 0.1);
 }
 
 .dark {
-  --bg: #17151C;
-  --surface: #211F28;
+  --bg: #14141A;
+  --surface: #1F1F28;
   --text: #F6F4EF;
   --text-muted: #A9A6B4;
   --border: #F6F4EF;
-  --accent-coral: #FF6B47;
-  --accent-sky: #45C2EC;
-  --accent-amber: #F5C346;
-  
-  --shadow-color: rgba(0, 0, 0, 0.3);
+
+  --accent-coral: #FF2E8C;
+  --accent-sky: #4D6BFF;
+  --accent-amber: #FFC24B;
+
+  --accent-pink: var(--accent-coral);
+  --accent-blue: var(--accent-sky);
+  --accent-gold: var(--accent-amber);
+
+  --shadow-color: rgba(0, 0, 0, 0.35);
 }
 
 @theme {
@@ -37,6 +55,18 @@
   --color-accent-coral: var(--accent-coral);
   --color-accent-sky: var(--accent-sky);
   --color-accent-amber: var(--accent-amber);
+
+  /* Semantic aliases — prefer these in new code */
+  --color-accent-pink: var(--accent-pink);
+  --color-accent-blue: var(--accent-blue);
+  --color-accent-gold: var(--accent-gold);
+
+  /* createwithflow duo for gradients */
+  --color-flow-pink: #FD0178;
+  --color-flow-blue: #0000FF;
+
+  /* Near-black for the bold (createwithflow-style) CTA canvas */
+  --color-ink: #0B0B10;
   
   --font-sans: var(--font-inter), system-ui, sans-serif;
   --font-display: var(--font-space-grotesk), system-ui, sans-serif;
@@ -59,6 +89,42 @@ body {
   background-color: var(--bg);
   color: var(--text);
   transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+/* Signature pink->blue gradient (createwithflow) */
+.bg-flow-gradient {
+  background-image: linear-gradient(120deg, #FD0178 0%, #FD0178 38%, #0000FF 100%);
+}
+
+.text-flow-gradient {
+  background-image: linear-gradient(120deg, #FD0178 0%, #FD0178 45%, #0000FF 100%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+
+/* GDG-style glass card — frosted translucent surface */
+.glass-card {
+  background: color-mix(in srgb, var(--surface) 78%, transparent);
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
+  border: 1.5px solid color-mix(in srgb, var(--border) 22%, transparent);
+  border-radius: 1.1rem;
+}
+
+/* Reusable eyebrow label (GDG-inspired section headers) */
+.eyebrow {
+  display: block;
+  font-size: 0.75rem;
+  font-weight: 700;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--accent-pink);
+  margin-bottom: 0.5rem;
+}
+
+.eyebrow-blue {
+  color: var(--accent-blue);
 }
 
 /* Soft Brutalist components */

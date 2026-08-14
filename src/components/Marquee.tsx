@@ -33,7 +33,7 @@ export default function Marquee() {
             key={i}
             className="flex items-center font-display font-bold uppercase tracking-[0.18em] text-text-muted text-sm sm:text-base"
           >
-            <span className="mx-6 text-accent-coral" aria-hidden>
+            <span className={`mx-6 ${i % 2 === 0 ? "text-accent-pink" : "text-accent-blue"}`} aria-hidden>
               ✦
             </span>
             {item}
