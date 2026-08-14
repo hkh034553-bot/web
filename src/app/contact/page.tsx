@@ -25,6 +25,9 @@ function ContactContent() {
   const [loading, setLoading] = useState(false);
   const [success, setSuccess] = useState(false);
   const [errorMsg, setErrorMsg] = useState("");
+  const [lastSubmittedEmail, setLastSubmittedEmail] = useState("");
+  // Honeypot: hidden field bots auto-fill. If it has a value, pretend success and drop the lead.
+  const [honeypot, setHoneypot] = useState("");
 
   // Pre-fill fields if coming from service / calculator links
   useEffect(() => {
@@ -42,13 +45,24 @@ function ContactContent() {
     setLoading(true);
     setErrorMsg("");
 
+    const trimmedName = fullName.trim();
+    const trimmedEmail = email.trim().toLowerCase();
+    const trimmedMessage = message.trim();
+
+    // Bots fill the hidden honeypot field — silently accept so they learn nothing.
+    if (honeypot) {
+      setSuccess(true);
+      setLoading(false);
+      return;
+    }
+
     try {
       const { error } = await supabase.from("contact_submissions").insert({
-        full_name: fullName,
-        email,
+        full_name: trimmedName,
+        email: trimmedEmail,
         project_focus: projectFocus,
         budget_range: budgetRange,
-        message,
+        message: trimmedMessage,
       });
 
       if (error) {
@@ -60,16 +74,18 @@ function ContactContent() {
       // and the README). Failures here never block the form success screen.
       supabase.functions.invoke("send-lead-email", {
         body: {
-          fullName,
-          email,
+          fullName: trimmedName,
+          email: trimmedEmail,
           projectFocus,
           budgetRange,
-          message,
+          message: trimmedMessage,
+          honeypot,
         },
       }).then(({ error: fnError }) => {
         if (fnError) console.error("Lead email trigger failed:", fnError);
       });
 
+      setLastSubmittedEmail(trimmedEmail);
       setSuccess(true);
       confetti({
         particleCount: 100,
@@ -151,7 +167,7 @@ function ContactContent() {
                     Growth Inquiry Sent!
                   </h3>
                   <p className="text-text-muted text-sm max-w-md mx-auto leading-relaxed">
-                    Thank you for reaching out. We have logged your request and will contact you directly at <span className="text-accent-coral font-bold">{email || "your email"}</span>.
+                    Thank you for reaching out. We have logged your request and will contact you directly at <span className="text-accent-coral font-bold">{lastSubmittedEmail || "your email"}</span>.
                   </p>
                   <button
                     onClick={() => setSuccess(false)}
@@ -162,6 +178,18 @@ function ContactContent() {
                 </div>
               ) : (
                 <form onSubmit={handleSubmit} className="space-y-6">
+                  {/* Honeypot — hidden from humans, irresistible to bots */}
+                  <div className="hidden" aria-hidden="true">
+                    <label htmlFor="website">Leave this field empty</label>
+                    <input
+                      id="website"
+                      type="text"
+                      tabIndex={-1}
+                      autoComplete="off"
+                      value={honeypot}
+                      onChange={(e) => setHoneypot(e.target.value)}
+                    />
+                  </div>
                   {errorMsg && (
                     <div className="p-4 border-2 border-border bg-red-100 dark:bg-red-950/20 text-red-700 dark:text-red-400 rounded-xl flex items-start gap-3 text-sm">
                       <AlertCircle className="w-5 h-5 flex-shrink-0 mt-0.5" />

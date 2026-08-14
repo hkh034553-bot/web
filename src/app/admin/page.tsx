@@ -18,7 +18,9 @@ import {
   Sparkles,
   Info,
   AlertCircle,
-  Lock
+  Lock,
+  Send,
+  CheckCircle2
 } from "lucide-react";
 import { createClient } from "@/lib/supabase/client";
 import Reveal from "@/components/Reveal";
@@ -108,13 +110,23 @@ export default function AdminPage() {
   // Collapsed message states
   const [expandedId, setExpandedId] = useState<string | null>(null);
 
+  // Client email campaign states
+  const [campaignRecipients, setCampaignRecipients] = useState<any[]>([]);
+  const [campaignName, setCampaignName] = useState("");
+  const [campaignEmail, setCampaignEmail] = useState("");
+  const [campaignStatusMsg, setCampaignStatusMsg] = useState<{ type: "ok" | "err"; text: string } | null>(null);
+  const [campaignSending, setCampaignSending] = useState(false);
+  const [accessToken, setAccessToken] = useState("");
+
   useEffect(() => {
     const authenticateAdmin = async () => {
       const { data: { session } } = await supabase.auth.getSession();
       
       if (session && session.user.email === "hasanshahirconnect@gmail.com") {
         setIsAdmin(true);
+        setAccessToken(session.access_token);
         fetchSubmissions();
+        fetchCampaignRecipients();
       } else {
         // If not authenticated, stop showing loading spinner and show the admin form inline
         setIsAdmin(false);
@@ -148,7 +160,9 @@ export default function AdminPage() {
 
       if (data.user?.email === "hasanshahirconnect@gmail.com") {
         setIsAdmin(true);
+        setAccessToken(data.session?.access_token || "");
         fetchSubmissions();
+        fetchCampaignRecipients();
       } else {
         await supabase.auth.signOut();
         setAdminLoginError("Access Denied.");
@@ -191,6 +205,58 @@ export default function AdminPage() {
   const handleSignOut = async () => {
     await supabase.auth.signOut();
     router.push("/login");
+  };
+
+  const fetchCampaignRecipients = async () => {
+    const { data, error } = await supabase
+      .from("campaign_recipients")
+      .select("*")
+      .order("created_at", { ascending: false });
+    if (!error && data) setCampaignRecipients(data);
+  };
+
+  const handleAddRecipient = async (e: React.FormEvent) => {
+    e.preventDefault();
+    const email = campaignEmail.trim().toLowerCase();
+    if (!email) return;
+    setCampaignStatusMsg(null);
+    const { error } = await supabase.from("campaign_recipients").insert({
+      full_name: campaignName.trim() || null,
+      email,
+    });
+    if (error) {
+      setCampaignStatusMsg({ type: "err", text: error.message });
+      return;
+    }
+    setCampaignName("");
+    setCampaignEmail("");
+    setCampaignStatusMsg({ type: "ok", text: "Recipient added to the list." });
+    fetchCampaignRecipients();
+  };
+
+  const handleDeleteRecipient = async (id: string) => {
+    const { error } = await supabase.from("campaign_recipients").delete().eq("id", id);
+    if (!error) fetchCampaignRecipients();
+  };
+
+  const handleSendCampaign = async () => {
+    setCampaignSending(true);
+    setCampaignStatusMsg(null);
+    const { data: { session } } = await supabase.auth.getSession();
+    const { data, error } = await supabase.functions.invoke("send-campaign-emails", {
+      headers: { Authorization: `Bearer ${session?.access_token ?? accessToken}` },
+      body: {},
+    });
+    if (error) {
+      setCampaignStatusMsg({ type: "err", text: `Campaign failed: ${error.message}` });
+    } else {
+      setCampaignStatusMsg({
+        type: "ok",
+        text: `Campaign complete: ${data?.sent ?? 0} delivered, ${data?.failed ?? 0} failed.`,
+      });
+    }
+    setCampaignSending(false);
+    fetchCampaignRecipients();
   };
 
   // Calculations
@@ -673,6 +739,135 @@ export default function AdminPage() {
               {isDemoData && <span>Database status: Fallback Demo Data Active</span>}
             </div>
 
+          </Reveal>
+
+          {/* Client Email Campaigns Section */}
+          <Reveal delay={0.1}>
+            <div className="brutalist-card bg-surface p-6 sm:p-8">
+              <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-6">
+                <div>
+                  <h3 className="font-display font-bold text-lg text-text">Client Email Campaigns</h3>
+                  <p className="text-xs text-text-muted mt-1">
+                    Add clients below and hit send — each pending recipient gets a personalized email straight to their inbox.
+                  </p>
+                </div>
+                <button
+                  onClick={handleSendCampaign}
+                  disabled={campaignSending}
+                  className="brutalist-btn brutalist-btn-primary px-5 py-2.5 text-xs flex items-center justify-center gap-2 select-none"
+                >
+                  {campaignSending ? (
+                    <>
+                      <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
+                      Sending...
+                    </>
+                  ) : (
+                    <>
+                      <Send className="w-3.5 h-3.5" />
+                      Send to Pending
+                    </>
+                  )}
+                </button>
+              </div>
+
+              {campaignStatusMsg && (
+                <div
+                  className={`p-3 mb-5 border-2 border-border rounded-xl text-xs font-semibold flex items-start gap-2 ${
+                    campaignStatusMsg.type === "ok"
+                      ? "bg-green-100 dark:bg-green-950/20 text-green-700 dark:text-green-400"
+                      : "bg-red-100 dark:bg-red-950/20 text-red-700 dark:text-red-400"
+                  }`}
+                >
+                  {campaignStatusMsg.type === "ok" ? (
+                    <CheckCircle2 className="w-4 h-4 flex-shrink-0 mt-0.5" />
+                  ) : (
+                    <AlertCircle className="w-4 h-4 flex-shrink-0 mt-0.5" />
+                  )}
+                  <p>{campaignStatusMsg.text}</p>
+                </div>
+              )}
+
+              {/* Add recipient form */}
+              <form onSubmit={handleAddRecipient} className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-[1fr_1fr_auto] gap-3 mb-6">
+                <input
+                  type="text"
+                  placeholder="Client name (optional)"
+                  value={campaignName}
+                  onChange={(e) => setCampaignName(e.target.value)}
+                  maxLength={100}
+                  className="w-full px-4 py-2.5 border-2 border-border bg-bg text-text rounded-xl focus:outline-none focus:border-accent-coral transition-colors placeholder:text-text-muted/50 text-xs"
+                />
+                <input
+                  type="email"
+                  required
+                  placeholder="client@company.com"
+                  value={campaignEmail}
+                  onChange={(e) => setCampaignEmail(e.target.value)}
+                  maxLength={200}
+                  className="w-full px-4 py-2.5 border-2 border-border bg-bg text-text rounded-xl focus:outline-none focus:border-accent-coral transition-colors placeholder:text-text-muted/50 text-xs"
+                />
+                <button
+                  type="submit"
+                  className="brutalist-btn brutalist-btn-secondary px-5 py-2.5 text-xs font-bold select-none"
+                >
+                  Add Recipient
+                </button>
+              </form>
+
+              {/* Recipient list */}
+              {campaignRecipients.length > 0 ? (
+                <div className="overflow-x-auto">
+                  <table className="w-full text-left border-collapse text-xs">
+                    <thead>
+                      <tr className="border-b-2 border-border bg-bg/30 text-text font-bold">
+                        <th className="p-3">Client</th>
+                        <th className="p-3">Email</th>
+                        <th className="p-3">Status</th>
+                        <th className="p-3">Sent At</th>
+                        <th className="p-3 text-center">Action</th>
+                      </tr>
+                    </thead>
+                    <tbody className="divide-y divide-border/10">
+                      {campaignRecipients.map((r) => (
+                        <tr key={r.id} className="hover:bg-bg/10 transition-colors">
+                          <td className="p-3 font-bold text-text">{r.full_name || "—"}</td>
+                          <td className="p-3 text-accent-sky font-semibold">{r.email}</td>
+                          <td className="p-3">
+                            <span
+                              className={`px-2.5 py-0.5 rounded-full font-bold uppercase text-[10px] border ${
+                                r.status === "sent"
+                                  ? "bg-green-100 dark:bg-green-950/20 text-green-700 dark:text-green-400 border-green-300 dark:border-green-900"
+                                  : r.status === "failed"
+                                  ? "bg-red-100 dark:bg-red-950/20 text-red-700 dark:text-red-400 border-red-300 dark:border-red-900"
+                                  : "bg-accent-amber/20 text-text border-border"
+                              }`}
+                            >
+                              {r.status || "pending"}
+                            </span>
+                          </td>
+                          <td className="p-3 text-text-muted">
+                            {r.sent_at ? new Date(r.sent_at).toLocaleString() : "—"}
+                          </td>
+                          <td className="p-3 text-center">
+                            <button
+                              onClick={() => handleDeleteRecipient(r.id)}
+                              className="border-2 border-border bg-bg text-text rounded-md px-3 py-1 hover:bg-bg/10 font-bold transition-all inline-flex items-center gap-1 cursor-pointer"
+                              title="Remove recipient"
+                            >
+                              <Trash2 className="w-3.5 h-3.5" />
+                            </button>
+                          </td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
+              ) : (
+                <div className="p-6 border-2 border-dashed border-border/40 rounded-xl text-center text-xs text-text-muted">
+                  No recipients yet — add your first client above.
+                </div>
+              )}
+            </div>
           </Reveal>
 
         </div>

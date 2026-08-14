@@ -56,16 +56,19 @@ The site is deployed, but these integrations need **your credentials** to light 
 
 ### 3. Sending campaigns to your client list
 
-1. In Supabase → **Table Editor → campaign_recipients → Insert row** for each client: `full_name`, `email` (required), optional custom `subject`/`body` (leave blank to use the default template).
-2. Trigger the send — either:
-   - In the Supabase dashboard: **Edge Functions → send-campaign-emails → Invoke** (POST, empty body sends to everyone with status ≠ `sent`), or
-   - From the Supabase CLI:
-     ```bash
-     curl -X POST https://<project-ref>.supabase.co/functions/v1/send-campaign-emails \
-       -H "Authorization: Bearer <anon-key>" \
-       -H "Content-Type: application/json" -d '{}'
-     ```
-3. Re-running is safe — already-sent recipients are skipped.
+**Easiest way — the admin dashboard:** sign in at `/admin` with your admin account → the **Client Email Campaigns** panel lets you add recipients (name + email), see their status, delete them, and hit **Send to Pending** to email everyone at once. No SQL, no curl.
+
+You can also manage recipients directly in Supabase → **Table Editor → campaign_recipients** (`full_name`, `email` required; optional custom `subject`/`body` — leave blank for the default template).
+
+**Security note:** `send-campaign-emails` is admin-only. It verifies the caller's Supabase session JWT belongs to `hasanshahirconnect@gmail.com` and rejects everyone else with 401 — so random visitors can't burn your email quota. To trigger it manually, pass the owner's access token (from the browser console session or the dashboard's Invoke button):
+
+```bash
+curl -X POST https://<project-ref>.supabase.co/functions/v1/send-campaign-emails \
+  -H "Authorization: Bearer <owner-access-token>" \
+  -H "Content-Type: application/json" -d '{}'
+```
+
+Re-running is safe — already-sent recipients are skipped.
 
 ### 4. Sentry (error tracking)
 
@@ -82,6 +85,14 @@ The site is deployed, but these integrations need **your credentials** to light 
 
 1. Go to https://coderabbit.ai → **Add a repository** → install the GitHub App on this repo.
 2. Every future pull request gets an automated AI code review. The rules live in `.coderabbit.yaml` (already configured for this codebase).
+
+## Security & spam protection (already wired in)
+
+- **Contact form:** hidden honeypot field silently drops bot submissions; the email function rate-limits (max 3 emails per address per 10 min) and caps input lengths.
+- **Email templates:** every user-supplied value is HTML-escaped before interpolation, preventing HTML injection into inboxes.
+- **Campaign sender:** admin-JWT-gated (owner email only), and recipient IDs are validated as UUIDs.
+- **Database:** Row Level Security is on for both tables — the public can only insert leads; only `hasanshahirconnect@gmail.com` (authenticated) can read/delete leads or manage recipients.
+- **Secrets:** all keys live in GitHub Actions secrets / Supabase secrets, never in the repo (`.env.local` is gitignored).
 
 ## Customizing content
 
