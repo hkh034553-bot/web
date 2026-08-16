@@ -12,6 +12,11 @@ export default function DashboardPage() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [authError, setAuthError] = useState("");
+  const [isSignUp, setIsSignUp] = useState(false);
+  const [authSuccess, setAuthSuccess] = useState("");
+  const [showSecretGateway, setShowSecretGateway] = useState(false);
+  const [secretCode, setSecretCode] = useState("");
+  const [secretError, setSecretError] = useState("");
   
   // Data state
   const [submissions, setSubmissions] = useState<any[]>([]);
@@ -50,12 +55,13 @@ export default function DashboardPage() {
       const { data: adminCheck } = await supabase.rpc("is_admin");
       
       if (!adminCheck) {
-        // Not an admin, kick them out
-        await supabase.auth.signOut();
-        setSession(null);
-        setAuthError("Unauthorized Access. This portal is strictly for administrators.");
+        // Not an admin, show the secret gateway instead of kicking them out
+        setShowSecretGateway(true);
+        setLoading(false);
         return;
       }
+      
+      setShowSecretGateway(false);
 
       // Fetch Admin Data
       const [subsRes, recsRes, logsRes] = await Promise.all([
@@ -78,14 +84,50 @@ export default function DashboardPage() {
   const handleAuth = async (e: React.FormEvent) => {
     e.preventDefault();
     setAuthError("");
+    setAuthSuccess("");
     setLoading(true);
     
-    const { error } = await supabase.auth.signInWithPassword({
-      email,
-      password,
-    });
-    if (error) setAuthError(error.message);
+    if (isSignUp) {
+      const { error } = await supabase.auth.signUp({
+        email,
+        password,
+      });
+      if (error) {
+        setAuthError(error.message);
+      } else {
+        setAuthSuccess("Registration successful! Please check your email for a confirmation link.");
+        setIsSignUp(false);
+      }
+    } else {
+      const { error } = await supabase.auth.signInWithPassword({
+        email,
+        password,
+      });
+      if (error) setAuthError(error.message);
+    }
     setLoading(false);
+  };
+
+  const handleSecretSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setSecretError("");
+    setLoading(true);
+    
+    try {
+      const { data, error } = await supabase.rpc("register_admin", { secret_code: secretCode });
+      if (error) throw error;
+      
+      if (data) {
+        // Success! Reload data
+        await checkRoleAndFetchData();
+      } else {
+        setSecretError("Invalid secret code.");
+      }
+    } catch (err: any) {
+      setSecretError(err.message || "An error occurred.");
+    } finally {
+      setLoading(false);
+    }
   };
 
   const handleLogout = async () => {
@@ -157,15 +199,20 @@ export default function DashboardPage() {
           <div className="w-full max-w-md relative z-10">
             <div className="brutalist-card p-8 md:p-10 relative overflow-hidden border-accent-sky">
               <div className="mb-8">
-                <span className="eyebrow eyebrow-blue">Restricted Zone</span>
+                <span className="eyebrow eyebrow-blue">{isSignUp ? "Admin Registration" : "Restricted Zone"}</span>
                 <h2 className="text-3xl font-display font-bold">
-                  Admin Login
+                  {isSignUp ? "Create Account" : "Admin Login"}
                 </h2>
               </div>
               
               {authError && (
                 <div className="mb-6 p-4 border-2 border-accent-coral bg-accent-coral/10 text-accent-coral text-sm rounded-lg font-medium">
                   {authError}
+                </div>
+              )}
+              {authSuccess && (
+                <div className="mb-6 p-4 border-2 border-green-500 bg-green-500/10 text-green-500 text-sm rounded-lg font-medium">
+                  {authSuccess}
                 </div>
               )}
 
@@ -197,9 +244,84 @@ export default function DashboardPage() {
                   className="w-full brutalist-btn brutalist-btn-primary py-4 text-lg mt-2 bg-accent-sky hover:bg-accent-blue hover:border-accent-blue" 
                   disabled={loading}
                 >
-                  {loading ? "Authorizing..." : "Authenticate"}
+                  {loading ? "Processing..." : (isSignUp ? "Register" : "Authenticate")}
                 </button>
               </form>
+              
+              <div className="mt-6 pt-6 border-t border-border/10 text-center">
+                <button 
+                  onClick={() => {
+                    setIsSignUp(!isSignUp);
+                    setAuthError("");
+                    setAuthSuccess("");
+                  }} 
+                  className="text-text-muted hover:text-text text-sm font-bold uppercase tracking-wider"
+                >
+                  {isSignUp ? "Already have an account? Log In" : "Need an account? Register"}
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+        <Footer />
+      </main>
+    );
+  }
+
+  // -------------------------------------------------------------
+  // SECRET GATEWAY
+  // -------------------------------------------------------------
+  if (showSecretGateway) {
+    return (
+      <main className="min-h-screen flex flex-col bg-bg text-text">
+        <Navbar />
+        <div className="flex-1 flex items-center justify-center p-4 pt-32 pb-16">
+          <div className="w-full max-w-md">
+            <div className="brutalist-card p-8 md:p-10 border-accent-gold">
+              <div className="mb-8 text-center">
+                <span className="eyebrow eyebrow-gold">Verification Required</span>
+                <h2 className="text-2xl font-display font-bold mt-2">
+                  Admin Gateway
+                </h2>
+                <p className="text-sm text-text-muted mt-2">
+                  Your account does not have administrator privileges. Please enter the master access code to unlock the Command Center.
+                </p>
+              </div>
+              
+              {secretError && (
+                <div className="mb-6 p-4 border-2 border-accent-coral bg-accent-coral/10 text-accent-coral text-sm rounded-lg font-medium">
+                  {secretError}
+                </div>
+              )}
+
+              <form onSubmit={handleSecretSubmit} className="space-y-6">
+                <div>
+                  <input 
+                    type="password" 
+                    value={secretCode} 
+                    onChange={e => setSecretCode(e.target.value)}
+                    className="w-full bg-surface border-2 border-border p-4 rounded-xl focus:outline-none focus:ring-4 focus:ring-accent-gold/20 transition-all font-mono text-center tracking-[0.2em]" 
+                    placeholder="ENTER SECRET CODE"
+                    required 
+                  />
+                </div>
+                <button 
+                  type="submit" 
+                  className="w-full brutalist-btn brutalist-btn-primary py-4 text-lg bg-accent-gold hover:bg-accent-coral hover:border-accent-coral" 
+                  disabled={loading}
+                >
+                  {loading ? "Verifying..." : "Unlock Access"}
+                </button>
+              </form>
+              
+              <div className="mt-6 pt-6 border-t border-border/10 text-center">
+                <button 
+                  onClick={handleLogout} 
+                  className="text-text-muted hover:text-accent-coral text-sm font-bold uppercase tracking-wider"
+                >
+                  Cancel & Sign Out
+                </button>
+              </div>
             </div>
           </div>
         </div>
