@@ -45,7 +45,7 @@ export async function POST(req: Request) {
         "content-type": "application/json",
       },
       body: JSON.stringify({
-        sender: { name: "Digivolve Leads", email: "hf.alihasan0@gmail.com" }, // Using your email as sender
+        sender: { name: "HKH", email: "hkh034553@gmail.com" }, // Using your verified Brevo email
         to: [{ email: "hf.alihasan0@gmail.com", name: "Hasan" }], 
         subject: `New Contact Submission from ${name}`,
         htmlContent: `<p><strong>Name:</strong> ${name}</p>

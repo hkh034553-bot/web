@@ -64,7 +64,7 @@ export async function POST(req: Request) {
           "content-type": "application/json",
         },
         body: JSON.stringify({
-          sender: { name: "Digivolve Campaigns", email: "hf.alihasan0@gmail.com" },
+          sender: { name: "HKH", email: "hkh034553@gmail.com" },
           to: [{ email: r.email, name: r.name || "" }],
           subject: subject,
           htmlContent: html,
