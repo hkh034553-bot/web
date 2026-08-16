@@ -63,12 +63,23 @@ function ContactContent() {
 
       if (insertError) throw insertError;
 
-      // 2. Invoke edge function to send email
-      const { error: invokeError } = await supabase.functions.invoke("send-lead-email", {
-        body: { name: trimmedName, email: trimmedEmail, message: trimmedMessage },
+      // 2. Invoke Vercel API Route to send email
+      const sessionResponse = await supabase.auth.getSession();
+      const token = sessionResponse.data.session?.access_token || "";
+      
+      const emailRes = await fetch("/api/contact", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          ...(token && { Authorization: `Bearer ${token}` })
+        },
+        body: JSON.stringify({ name: trimmedName, email: trimmedEmail, message: trimmedMessage }),
       });
 
-      if (invokeError) console.error("Edge function error:", invokeError);
+      if (!emailRes.ok) {
+        const errorData = await emailRes.json();
+        console.error("API error:", errorData);
+      }
       setLastSubmittedEmail(trimmedEmail);
       setSuccess(true);
       confetti({
