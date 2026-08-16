@@ -109,11 +109,7 @@ export default function Footer() {
                   Portfolio
                 </a>
               </li>
-              <li>
-                <Link href="/login" className="text-sm text-text-muted hover:text-text hover:underline underline-offset-4">
-                  Member Portal
-                </Link>
-              </li>
+
             </ul>
           </StaggerItem>
 
