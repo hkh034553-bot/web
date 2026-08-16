@@ -36,8 +36,8 @@ export async function POST(req: Request) {
       return NextResponse.json({ error: "Rate limit exceeded" }, { status: 429 });
     }
 
-    // Send email using Brevo
-    const res = await fetch("https://api.brevo.com/v3/smtp/email", {
+    // 1. Send notification to admin (hasanshahirconnect@gmail.com)
+    const adminRes = await fetch("https://api.brevo.com/v3/smtp/email", {
       method: "POST",
       headers: {
         "accept": "application/json",
@@ -45,8 +45,8 @@ export async function POST(req: Request) {
         "content-type": "application/json",
       },
       body: JSON.stringify({
-        sender: { name: "HKH", email: "hkh034553@gmail.com" }, // Using your verified Brevo email
-        to: [{ email: "hf.alihasan0@gmail.com", name: "Hasan" }], 
+        sender: { name: "HKH", email: "hkh034553@gmail.com" },
+        to: [{ email: "hasanshahirconnect@gmail.com", name: "Admin" }], 
         subject: `New Contact Submission from ${name}`,
         htmlContent: `<p><strong>Name:</strong> ${name}</p>
                <p><strong>Email:</strong> ${email}</p>
@@ -54,9 +54,37 @@ export async function POST(req: Request) {
       }),
     });
 
-    const brevoData = await res.json();
+    // 2. Send auto-reply to the client
+    const clientRes = await fetch("https://api.brevo.com/v3/smtp/email", {
+      method: "POST",
+      headers: {
+        "accept": "application/json",
+        "api-key": BREVO_API_KEY!,
+        "content-type": "application/json",
+      },
+      body: JSON.stringify({
+        sender: { name: "HKH", email: "hkh034553@gmail.com" },
+        to: [{ email: email, name: name }], 
+        subject: `We've received your inquiry!`,
+        htmlContent: `
+          <div style="font-family: sans-serif; color: #111; max-width: 600px; margin: 0 auto; line-height: 1.6;">
+            <h2 style="color: #222;">Hi ${name},</h2>
+            <p>Thank you for reaching out to us. We have successfully received your inquiry and our team will get back to you shortly.</p>
+            <br/>
+            <p>Best regards,<br/><strong>The HKH Team</strong></p>
+          </div>
+        `,
+      }),
+    });
 
-    return NextResponse.json(brevoData, { status: res.ok ? 200 : 400 });
+    const adminData = await adminRes.json();
+    const clientData = await clientRes.json();
+
+    if (!adminRes.ok || !clientRes.ok) {
+      return NextResponse.json({ error: "Failed to send emails", adminData, clientData }, { status: 400 });
+    }
+
+    return NextResponse.json({ success: true }, { status: 200 });
   } catch (error: any) {
     return NextResponse.json({ error: error.message }, { status: 500 });
   }
