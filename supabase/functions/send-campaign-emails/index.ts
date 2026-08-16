@@ -88,7 +88,7 @@ serve(async (req) => {
           "content-type": "application/json",
         },
         body: JSON.stringify({
-          sender: { name: "Campaigns", email: "campaigns@yourdomain.com" }, // Update with verified domain
+          sender: { name: "Digivolve Campaigns", email: "hf.alihasan0@gmail.com" }, // Using your email as sender
           to: [{ email: r.email, name: r.name || "" }],
           subject: subject,
           htmlContent: html,

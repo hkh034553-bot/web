@@ -60,8 +60,8 @@ serve(async (req) => {
         "content-type": "application/json",
       },
       body: JSON.stringify({
-        sender: { name: "Leads", email: "leads@yourdomain.com" }, // Update with verified domain
-        to: [{ email: "admin@yourdomain.com", name: "Admin" }], // Update with admin email
+        sender: { name: "Digivolve Leads", email: "hf.alihasan0@gmail.com" }, // Using your email as sender to avoid unverified domain errors
+        to: [{ email: "hf.alihasan0@gmail.com", name: "Hasan" }], 
         subject: `New Contact Submission from ${name}`,
         htmlContent: `<p><strong>Name:</strong> ${name}</p>
                <p><strong>Email:</strong> ${email}</p>
