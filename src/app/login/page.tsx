@@ -2,18 +2,25 @@
 
 import React, { useState, useEffect } from "react";
 import { supabase } from "@/lib/supabase/client";
+import Navbar from "@/components/Navbar";
+import Footer from "@/components/Footer";
 
 export default function AdminPage() {
   const [session, setSession] = useState<any>(null);
+  
+  // Auth state
+  const [isSignUp, setIsSignUp] = useState(false);
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [authError, setAuthError] = useState("");
+  const [authMessage, setAuthMessage] = useState("");
   
+  // Data state
   const [submissions, setSubmissions] = useState<any[]>([]);
   const [recipients, setRecipients] = useState<any[]>([]);
   const [logs, setLogs] = useState<any[]>([]);
   
   const [loading, setLoading] = useState(true);
-  const [authError, setAuthError] = useState("");
 
   useEffect(() => {
     supabase.auth.getSession().then(({ data: { session } }) => {
@@ -51,15 +58,29 @@ export default function AdminPage() {
     }
   };
 
-  const handleLogin = async (e: React.FormEvent) => {
+  const handleAuth = async (e: React.FormEvent) => {
     e.preventDefault();
     setAuthError("");
+    setAuthMessage("");
     setLoading(true);
-    const { error } = await supabase.auth.signInWithPassword({
-      email,
-      password,
-    });
-    if (error) setAuthError(error.message);
+    
+    if (isSignUp) {
+      const { data, error } = await supabase.auth.signUp({
+        email,
+        password,
+      });
+      if (error) {
+        setAuthError(error.message);
+      } else {
+        setAuthMessage("Account created! Check your email if verification is required. Important: You must manually insert your UUID into the admin_users table in the Supabase Dashboard before you can view data.");
+      }
+    } else {
+      const { error } = await supabase.auth.signInWithPassword({
+        email,
+        password,
+      });
+      if (error) setAuthError(error.message);
+    }
     setLoading(false);
   };
 
@@ -67,125 +88,228 @@ export default function AdminPage() {
     await supabase.auth.signOut();
   };
 
-  if (loading && !session) {
-    return <div className="p-8">Loading...</div>;
-  }
-
-  if (!session) {
+  // -------------------------------------------------------------
+  // LOADING STATE
+  // -------------------------------------------------------------
+  if (loading && !session && !authError && !authMessage) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-gray-100 p-4">
-        <div className="bg-white p-8 rounded shadow-md w-full max-w-sm">
-          <h2 className="text-2xl font-bold mb-4">Admin Login</h2>
-          {authError && <div className="text-red-500 text-sm mb-4">{authError}</div>}
-          <form onSubmit={handleLogin} className="space-y-4">
-            <div>
-              <label className="block text-sm font-medium mb-1">Email</label>
-              <input 
-                type="email" 
-                value={email} 
-                onChange={e => setEmail(e.target.value)}
-                className="w-full border p-2 rounded" 
-                required 
-              />
-            </div>
-            <div>
-              <label className="block text-sm font-medium mb-1">Password</label>
-              <input 
-                type="password" 
-                value={password} 
-                onChange={e => setPassword(e.target.value)}
-                className="w-full border p-2 rounded" 
-                required 
-              />
-            </div>
-            <button type="submit" className="w-full bg-blue-600 text-white py-2 rounded hover:bg-blue-700" disabled={loading}>
-              {loading ? "Logging in..." : "Login"}
-            </button>
-          </form>
+      <main className="min-h-screen flex flex-col bg-bg text-text">
+        <Navbar />
+        <div className="flex-1 flex items-center justify-center p-4 pt-32">
+          <div className="glass-card p-12 text-center animate-pulse">
+            <h2 className="text-xl font-display text-text-muted">Authenticating...</h2>
+          </div>
         </div>
-      </div>
+        <Footer />
+      </main>
     );
   }
 
+  // -------------------------------------------------------------
+  // LOGIN / SIGNUP PAGE
+  // -------------------------------------------------------------
+  if (!session) {
+    return (
+      <main className="min-h-screen flex flex-col bg-bg text-text">
+        <Navbar />
+        <div className="flex-1 flex items-center justify-center p-4 pt-32 pb-16 relative overflow-hidden">
+          
+          {/* Subtle background glow */}
+          <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[80vw] h-[80vw] max-w-[600px] max-h-[600px] bg-flow-gradient rounded-full blur-[120px] opacity-20 pointer-events-none" />
+
+          <div className="w-full max-w-md relative z-10">
+            <div className="brutalist-card p-8 md:p-10 relative overflow-hidden">
+              <div className="mb-8">
+                <span className="eyebrow">{isSignUp ? "Join the Team" : "Secure Access"}</span>
+                <h2 className="text-3xl font-display font-bold">
+                  {isSignUp ? "Create Account" : "Admin Portal"}
+                </h2>
+              </div>
+              
+              {authError && (
+                <div className="mb-6 p-4 border-2 border-accent-coral bg-accent-coral/10 text-accent-coral text-sm rounded-lg font-medium">
+                  {authError}
+                </div>
+              )}
+              {authMessage && (
+                <div className="mb-6 p-4 border-2 border-accent-sky bg-accent-sky/10 text-accent-sky text-sm rounded-lg font-medium leading-relaxed">
+                  {authMessage}
+                </div>
+              )}
+
+              <form onSubmit={handleAuth} className="space-y-6">
+                <div>
+                  <label className="block text-sm font-bold mb-2 uppercase tracking-widest text-text-muted">Email Address</label>
+                  <input 
+                    type="email" 
+                    value={email} 
+                    onChange={e => setEmail(e.target.value)}
+                    className="w-full bg-surface border-2 border-border p-4 rounded-xl focus:outline-none focus:ring-4 focus:ring-accent-coral/20 transition-all font-medium" 
+                    placeholder="hq@hkh.agency"
+                    required 
+                  />
+                </div>
+                <div>
+                  <label className="block text-sm font-bold mb-2 uppercase tracking-widest text-text-muted">Password</label>
+                  <input 
+                    type="password" 
+                    value={password} 
+                    onChange={e => setPassword(e.target.value)}
+                    className="w-full bg-surface border-2 border-border p-4 rounded-xl focus:outline-none focus:ring-4 focus:ring-accent-sky/20 transition-all font-medium" 
+                    placeholder="••••••••"
+                    required 
+                  />
+                </div>
+                <button 
+                  type="submit" 
+                  className="w-full brutalist-btn brutalist-btn-primary py-4 text-lg mt-2" 
+                  disabled={loading}
+                >
+                  {loading ? "Processing..." : isSignUp ? "Sign Up" : "Sign In"}
+                </button>
+              </form>
+              
+              <div className="mt-8 pt-6 border-t-2 border-border/10 text-center">
+                <p className="text-text-muted font-medium mb-4">
+                  {isSignUp ? "Already have an account?" : "Need an admin account?"}
+                </p>
+                <button 
+                  type="button"
+                  onClick={() => {
+                    setIsSignUp(!isSignUp);
+                    setAuthError("");
+                    setAuthMessage("");
+                  }} 
+                  className="brutalist-btn brutalist-btn-secondary px-6 py-2 text-sm"
+                >
+                  {isSignUp ? "Switch to Login" : "Create Account"}
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+        <Footer />
+      </main>
+    );
+  }
+
+  // -------------------------------------------------------------
+  // DASHBOARD PAGE
+  // -------------------------------------------------------------
   return (
-    <div className="min-h-screen bg-gray-50 p-8 text-black">
-      <div className="flex justify-between items-center mb-8">
-        <h1 className="text-3xl font-bold">Admin Dashboard</h1>
-        <button onClick={handleLogout} className="px-4 py-2 bg-gray-200 rounded hover:bg-gray-300">
-          Logout
-        </button>
-      </div>
-
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-        {/* Contact Submissions */}
-        <div className="bg-white p-6 rounded shadow">
-          <h2 className="text-xl font-semibold mb-4">Contact Submissions</h2>
-          <div className="space-y-4">
-            {submissions.length === 0 ? <p className="text-gray-500">No submissions found.</p> : 
-              submissions.map(sub => (
-                <div key={sub.id} className="border p-4 rounded bg-gray-50">
-                  <p className="font-bold">{sub.name} <span className="text-sm font-normal text-gray-500">({sub.email})</span></p>
-                  <p className="mt-2 text-sm">{sub.message}</p>
-                  <p className="mt-2 text-xs text-gray-400">{new Date(sub.created_at).toLocaleString()}</p>
-                </div>
-              ))
-            }
+    <main className="min-h-screen flex flex-col bg-bg text-text">
+      <Navbar />
+      <div className="flex-1 p-4 md:p-8 pt-32 max-w-7xl mx-auto w-full">
+        
+        {/* Dashboard Header */}
+        <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-12 gap-6">
+          <div>
+            <span className="eyebrow eyebrow-blue">Command Center</span>
+            <h1 className="text-4xl md:text-5xl font-display font-bold">Admin Dashboard</h1>
+            <p className="text-text-muted mt-2 font-medium">Logged in as {session.user.email}</p>
           </div>
+          <button onClick={handleLogout} className="brutalist-btn brutalist-btn-secondary px-6 py-3">
+            Sign Out
+          </button>
         </div>
 
-        {/* Campaign Recipients */}
-        <div className="bg-white p-6 rounded shadow">
-          <h2 className="text-xl font-semibold mb-4">Campaign Recipients</h2>
-          <div className="space-y-4">
-            {recipients.length === 0 ? <p className="text-gray-500">No recipients found.</p> : 
-              recipients.map(rec => (
-                <div key={rec.id} className="border p-4 rounded flex justify-between items-center bg-gray-50">
-                  <div>
-                    <p className="font-bold">{rec.name || 'No Name'}</p>
-                    <p className="text-sm">{rec.email}</p>
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-16">
+          
+          {/* Contact Submissions */}
+          <div className="brutalist-card p-6 md:p-8">
+            <div className="flex items-center justify-between mb-6 pb-4 border-b-2 border-border/10">
+              <h2 className="text-2xl font-display font-bold">Inbound Leads</h2>
+              <span className="brutalist-badge-coral px-3 py-1 text-xs font-bold text-white">
+                {submissions.length} Total
+              </span>
+            </div>
+            
+            <div className="space-y-4 max-h-[500px] overflow-y-auto pr-2">
+              {submissions.length === 0 ? <p className="text-text-muted font-medium py-8 text-center border-2 border-dashed border-border/20 rounded-xl">No leads found.</p> : 
+                submissions.map(sub => (
+                  <div key={sub.id} className="glass-card p-5 group hover:border-accent-coral transition-colors">
+                    <div className="flex justify-between items-start mb-2">
+                      <p className="font-bold text-lg">{sub.name}</p>
+                      <p className="text-xs text-text-muted font-medium bg-surface px-2 py-1 rounded-md border border-border/10">
+                        {new Date(sub.created_at).toLocaleDateString()}
+                      </p>
+                    </div>
+                    <a href={`mailto:${sub.email}`} className="text-accent-blue text-sm font-medium hover:underline mb-3 block">
+                      {sub.email}
+                    </a>
+                    <p className="text-sm leading-relaxed">{sub.message}</p>
                   </div>
-                  <span className={`text-xs px-2 py-1 rounded ${rec.status === 'active' ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'}`}>
-                    {rec.status}
-                  </span>
-                </div>
-              ))
-            }
+                ))
+              }
+            </div>
           </div>
-        </div>
 
-        {/* Audit Log */}
-        <div className="bg-white p-6 rounded shadow lg:col-span-2">
-          <h2 className="text-xl font-semibold mb-4">Audit Log</h2>
-          <div className="overflow-x-auto">
-            <table className="w-full text-left text-sm">
-              <thead>
-                <tr className="border-b">
-                  <th className="py-2">Time</th>
-                  <th className="py-2">Admin ID</th>
-                  <th className="py-2">Action</th>
-                  <th className="py-2">Table</th>
-                  <th className="py-2">Details</th>
-                </tr>
-              </thead>
-              <tbody>
-                {logs.length === 0 ? (
-                  <tr><td colSpan={5} className="py-4 text-gray-500 text-center">No logs found.</td></tr>
-                ) : logs.map(log => (
-                  <tr key={log.id} className="border-b last:border-0">
-                    <td className="py-2">{new Date(log.created_at).toLocaleString()}</td>
-                    <td className="py-2 truncate max-w-[150px]" title={log.admin_user_id}>{log.admin_user_id}</td>
-                    <td className="py-2"><span className="px-2 py-1 bg-gray-100 rounded text-xs font-mono">{log.action}</span></td>
-                    <td className="py-2">{log.target_table}</td>
-                    <td className="py-2 text-xs max-w-xs truncate" title={JSON.stringify(log.metadata)}>
-                      {JSON.stringify(log.metadata)}
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
+          {/* Campaign Recipients */}
+          <div className="brutalist-card p-6 md:p-8">
+            <div className="flex items-center justify-between mb-6 pb-4 border-b-2 border-border/10">
+              <h2 className="text-2xl font-display font-bold">Campaign List</h2>
+              <span className="brutalist-badge-sky px-3 py-1 text-xs font-bold text-white">
+                {recipients.length} Active
+              </span>
+            </div>
+            
+            <div className="space-y-4 max-h-[500px] overflow-y-auto pr-2">
+              {recipients.length === 0 ? <p className="text-text-muted font-medium py-8 text-center border-2 border-dashed border-border/20 rounded-xl">No recipients found.</p> : 
+                recipients.map(rec => (
+                  <div key={rec.id} className="glass-card p-4 flex justify-between items-center group hover:border-accent-sky transition-colors">
+                    <div>
+                      <p className="font-bold">{rec.name || 'Anonymous'}</p>
+                      <p className="text-sm text-text-muted">{rec.email}</p>
+                    </div>
+                    <span className={`text-xs px-3 py-1.5 rounded-full font-bold uppercase tracking-wide border-2 ${rec.status === 'active' ? 'bg-accent-gold/20 text-accent-gold border-accent-gold/30' : 'bg-surface text-text-muted border-border/10'}`}>
+                      {rec.status}
+                    </span>
+                  </div>
+                ))
+              }
+            </div>
           </div>
+
+          {/* Audit Log */}
+          <div className="brutalist-card p-6 md:p-8 lg:col-span-2">
+            <div className="mb-6 pb-4 border-b-2 border-border/10">
+              <span className="eyebrow text-text-muted">Security</span>
+              <h2 className="text-2xl font-display font-bold">Audit Log</h2>
+            </div>
+            
+            <div className="overflow-x-auto">
+              <table className="w-full text-left">
+                <thead>
+                  <tr className="border-b-2 border-border/10">
+                    <th className="py-3 px-4 font-bold uppercase tracking-wider text-xs text-text-muted">Time</th>
+                    <th className="py-3 px-4 font-bold uppercase tracking-wider text-xs text-text-muted">Admin ID</th>
+                    <th className="py-3 px-4 font-bold uppercase tracking-wider text-xs text-text-muted">Action</th>
+                    <th className="py-3 px-4 font-bold uppercase tracking-wider text-xs text-text-muted">Table</th>
+                  </tr>
+                </thead>
+                <tbody className="font-medium text-sm">
+                  {logs.length === 0 ? (
+                    <tr><td colSpan={4} className="py-12 text-text-muted text-center border-2 border-dashed border-border/20 rounded-xl mt-4 table-cell">No security events recorded.</td></tr>
+                  ) : logs.map(log => (
+                    <tr key={log.id} className="border-b border-border/5 hover:bg-surface/50 transition-colors">
+                      <td className="py-4 px-4 whitespace-nowrap text-text-muted">{new Date(log.created_at).toLocaleString()}</td>
+                      <td className="py-4 px-4 whitespace-nowrap font-mono text-xs max-w-[120px] truncate" title={log.admin_user_id}>{log.admin_user_id}</td>
+                      <td className="py-4 px-4">
+                        <span className="bg-surface border-2 border-border px-2 py-1 rounded text-xs font-bold uppercase">
+                          {log.action}
+                        </span>
+                      </td>
+                      <td className="py-4 px-4 font-bold text-accent-coral">{log.target_table}</td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          </div>
+          
         </div>
       </div>
-    </div>
+      <Footer />
+    </main>
   );
 }
