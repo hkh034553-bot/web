@@ -10,11 +10,10 @@ import { Stagger, StaggerItem } from "@/components/Stagger";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import WhatsAppButton from "@/components/WhatsAppButton";
-import { createClient } from "@/lib/supabase/client";
+import { supabase } from "@/lib/supabase/client";
 
 function ContactContent() {
   const searchParams = useSearchParams();
-  const supabase = createClient();
 
   const [fullName, setFullName] = useState("");
   const [email, setEmail] = useState("");
@@ -57,34 +56,19 @@ function ContactContent() {
     }
 
     try {
-      const { error } = await supabase.from("contact_submissions").insert({
-        full_name: trimmedName,
-        email: trimmedEmail,
-        project_focus: projectFocus,
-        budget_range: budgetRange,
-        message: trimmedMessage,
+      // 1. Insert into database
+      const { error: insertError } = await supabase
+        .from("contact_submissions")
+        .insert([{ name: trimmedName, email: trimmedEmail, message: trimmedMessage }]);
+
+      if (insertError) throw insertError;
+
+      // 2. Invoke edge function to send email
+      const { error: invokeError } = await supabase.functions.invoke("send-lead-email", {
+        body: { name: trimmedName, email: trimmedEmail, message: trimmedMessage },
       });
 
-      if (error) {
-        throw new Error(error.message);
-      }
-
-      // Fire-and-forget: trigger the automated confirmation + owner notification emails.
-      // The Edge Function must be deployed first (see supabase/functions/send-lead-email
-      // and the README). Failures here never block the form success screen.
-      supabase.functions.invoke("send-lead-email", {
-        body: {
-          fullName: trimmedName,
-          email: trimmedEmail,
-          projectFocus,
-          budgetRange,
-          message: trimmedMessage,
-          honeypot,
-        },
-      }).then(({ error: fnError }) => {
-        if (fnError) console.error("Lead email trigger failed:", fnError);
-      });
-
+      if (invokeError) console.error("Edge function error:", invokeError);
       setLastSubmittedEmail(trimmedEmail);
       setSuccess(true);
       confetti({
