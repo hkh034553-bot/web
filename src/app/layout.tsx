@@ -4,6 +4,7 @@ import "./globals.css";
 import { ThemeProvider } from "@/context/ThemeContext";
 import PageTransition from "@/components/PageTransition";
 import MotionProvider from "@/components/MotionProvider";
+import { PostHogProvider } from "./providers";
 
 const spaceGrotesk = Space_Grotesk({
   subsets: ["latin"],
@@ -35,11 +36,13 @@ export default function RootLayout({
       className={`${spaceGrotesk.variable} ${inter.variable} h-full antialiased`}
     >
       <body className="min-h-full bg-bg text-text font-sans flex flex-col">
-        <ThemeProvider>
-          <MotionProvider>
-            <PageTransition>{children}</PageTransition>
-          </MotionProvider>
-        </ThemeProvider>
+        <PostHogProvider>
+          <ThemeProvider>
+            <MotionProvider>
+              <PageTransition>{children}</PageTransition>
+            </MotionProvider>
+          </ThemeProvider>
+        </PostHogProvider>
       </body>
     </html>
   );
