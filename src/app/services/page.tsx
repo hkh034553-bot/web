@@ -24,12 +24,19 @@ import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import WhatsAppButton from "@/components/WhatsAppButton";
 
+import { useEffect } from "react";
+
 /** Live-spring number: animates toward the latest value whenever it changes. */
 function AnimatedNumber({ value, className = "" }: { value: number; className?: string }) {
   const spring = useSpring(value, { stiffness: 90, damping: 22 });
   const display = useTransform(spring, (v) =>
     Math.round(v).toLocaleString()
   );
+
+  useEffect(() => {
+    spring.set(value);
+  }, [value, spring]);
+
   return <motion.span className={className}>{display}</motion.span>;
 }
 
