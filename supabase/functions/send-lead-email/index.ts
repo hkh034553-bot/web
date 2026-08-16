@@ -1,7 +1,7 @@
 import { serve } from "https://deno.land/std@0.192.0/http/server.ts";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2.45.0";
 
-const RESEND_API_KEY = Deno.env.get("RESEND_API_KEY");
+const BREVO_API_KEY = Deno.env.get("BREVO_API_KEY");
 const SUPABASE_URL = Deno.env.get("SUPABASE_URL");
 const SUPABASE_ANON_KEY = Deno.env.get("SUPABASE_ANON_KEY");
 
@@ -51,26 +51,27 @@ serve(async (req) => {
       });
     }
 
-    // Send email using Resend
-    const res = await fetch("https://api.resend.com/emails", {
+    // Send email using Brevo
+    const res = await fetch("https://api.brevo.com/v3/smtp/email", {
       method: "POST",
       headers: {
-        "Content-Type": "application/json",
-        Authorization: `Bearer ${RESEND_API_KEY}`,
+        "accept": "application/json",
+        "api-key": BREVO_API_KEY!,
+        "content-type": "application/json",
       },
       body: JSON.stringify({
-        from: "Leads <leads@yourdomain.com>", // Update with verified domain
-        to: ["admin@yourdomain.com"], // Update with admin email
+        sender: { name: "Leads", email: "leads@yourdomain.com" }, // Update with verified domain
+        to: [{ email: "admin@yourdomain.com", name: "Admin" }], // Update with admin email
         subject: `New Contact Submission from ${name}`,
-        html: `<p><strong>Name:</strong> ${name}</p>
+        htmlContent: `<p><strong>Name:</strong> ${name}</p>
                <p><strong>Email:</strong> ${email}</p>
                <p><strong>Message:</strong> ${message}</p>`,
       }),
     });
 
-    const resendData = await res.json();
+    const brevoData = await res.json();
 
-    return new Response(JSON.stringify(resendData), {
+    return new Response(JSON.stringify(brevoData), {
       headers: { ...corsHeaders, "Content-Type": "application/json" },
       status: res.ok ? 200 : 400,
     });

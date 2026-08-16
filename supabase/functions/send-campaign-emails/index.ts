@@ -1,7 +1,7 @@
 import { serve } from "https://deno.land/std@0.192.0/http/server.ts";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2.45.0";
 
-const RESEND_API_KEY = Deno.env.get("RESEND_API_KEY");
+const BREVO_API_KEY = Deno.env.get("BREVO_API_KEY");
 const SUPABASE_URL = Deno.env.get("SUPABASE_URL");
 const SUPABASE_ANON_KEY = Deno.env.get("SUPABASE_ANON_KEY");
 
@@ -77,26 +77,28 @@ serve(async (req) => {
       });
     }
 
-    // Send emails (In a real scenario, use Resend batch API)
-    const res = await fetch("https://api.resend.com/emails/batch", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: `Bearer ${RESEND_API_KEY}`,
-      },
-      body: JSON.stringify(
-        recipients.map((r: any) => ({
-          from: "Campaigns <campaigns@yourdomain.com>", // Update with verified domain
-          to: [r.email],
+    // Send emails using Brevo (Looping over recipients and sending via Promise.all)
+    // For large campaigns, Brevo has batch options, but Promise.all is reliable for smaller lists
+    const emailPromises = recipients.map((r: any) =>
+      fetch("https://api.brevo.com/v3/smtp/email", {
+        method: "POST",
+        headers: {
+          "accept": "application/json",
+          "api-key": BREVO_API_KEY!,
+          "content-type": "application/json",
+        },
+        body: JSON.stringify({
+          sender: { name: "Campaigns", email: "campaigns@yourdomain.com" }, // Update with verified domain
+          to: [{ email: r.email, name: r.name || "" }],
           subject: subject,
-          html: html,
-        }))
-      ),
-    });
+          htmlContent: html,
+        }),
+      }).then((res) => res.json())
+    );
 
-    const resendData = await res.json();
+    const brevoResults = await Promise.all(emailPromises);
 
-    return new Response(JSON.stringify({ success: true, data: resendData }), {
+    return new Response(JSON.stringify({ success: true, data: brevoResults }), {
       headers: { ...corsHeaders, "Content-Type": "application/json" },
       status: res.ok ? 200 : 400,
     });
