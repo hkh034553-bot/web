@@ -212,6 +212,93 @@ body {
   box-shadow: 3px 3px 0 var(--border);
 }
 
+/* Accessibility: skip-to-content link (hidden until focused) */
+.skip-link {
+  position: fixed;
+  top: -120px;
+  left: 1rem;
+  z-index: 99999;
+  padding: 0.75rem 1.25rem;
+  background: var(--accent-coral);
+  color: #ffffff;
+  font-weight: 700;
+  font-size: 0.85rem;
+  border-radius: 999px;
+  border: 2px solid var(--border);
+  box-shadow: 3px 3px 0 var(--border);
+  transition: top 0.2s ease;
+}
+
+.skip-link:focus {
+  top: 1rem;
+}
+
+/* Scroll target for skip link — clears the fixed mobile header */
+#main-content {
+  scroll-margin-top: 6rem;
+}
+
+/* Visible focus ring everywhere */
+:focus-visible {
+  outline: 3px solid var(--accent-sky);
+  outline-offset: 2px;
+}
+
+/* ------------------------------------------------------------------
+   Print stylesheet — clean black-on-white output, chrome hidden
+------------------------------------------------------------------- */
+@media print {
+  body {
+    background: #ffffff !important;
+    color: #000000 !important;
+  }
+
+  header,
+  footer,
+  aside,
+  nav,
+  iframe,
+  .no-print,
+  .skip-link {
+    display: none !important;
+  }
+
+  .fixed {
+    display: none !important;
+  }
+
+  main {
+    padding: 0 !important;
+    margin: 0 !important;
+    width: 100% !important;
+  }
+
+  .brutalist-card,
+  .glass-card {
+    box-shadow: none !important;
+    border-color: #000000 !important;
+    background: #ffffff !important;
+    color: #000000 !important;
+    break-inside: avoid;
+  }
+
+  a {
+    color: #000000 !important;
+    text-decoration: underline;
+  }
+
+  a[href^="http"]::after {
+    content: " (" attr(href) ")";
+    font-size: 0.8em;
+    color: #555555;
+  }
+
+  * {
+    animation: none !important;
+    transition: none !important;
+  }
+}
+
 /* Custom Scrollbar for brutalist look */
 ::-webkit-scrollbar {
   width: 10px;

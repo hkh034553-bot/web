@@ -4,6 +4,8 @@ import "./globals.css";
 import { ThemeProvider } from "@/context/ThemeContext";
 import PageTransition from "@/components/PageTransition";
 import MotionProvider from "@/components/MotionProvider";
+import SkipLink from "@/components/SkipLink";
+import ClientChrome from "@/components/ClientChrome";
 import { PostHogProvider } from "./providers";
 
 const spaceGrotesk = Space_Grotesk({
@@ -36,9 +38,11 @@ export default function RootLayout({
       className={`${spaceGrotesk.variable} ${inter.variable} h-full antialiased`}
     >
       <body className="min-h-full bg-bg text-text font-sans flex flex-col">
+        <SkipLink />
         <PostHogProvider>
           <ThemeProvider>
             <MotionProvider>
+              <ClientChrome />
               <PageTransition>{children}</PageTransition>
             </MotionProvider>
           </ThemeProvider>

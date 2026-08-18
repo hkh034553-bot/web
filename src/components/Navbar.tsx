@@ -1,10 +1,11 @@
 "use client";
 
-import React, { useState } from "react";
+import React from "react";
 import Link from "next/link";
 import { useTheme } from "@/context/ThemeContext";
-import { Sun, Moon, Menu, X } from "lucide-react";
+import { Sun, Moon, Menu, X, Search } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
+import { openSiteSearch } from "@/components/SiteSearch";
 
 export default function Navbar() {
   const { theme, toggleTheme, isMenuOpen, setIsMenuOpen } = useTheme();
@@ -42,18 +43,28 @@ export default function Navbar() {
           {isOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
         </button>
 
-        {/* Bottom: Theme Toggle */}
-        <button
-          onClick={toggleTheme}
-          className="w-11 h-11 border-2 border-border bg-bg text-text rounded-full flex items-center justify-center shadow-brutal hover:shadow-brutal-sm hover:translate-x-[2px] hover:translate-y-[2px] transition-all duration-150 cursor-pointer"
-          aria-label="Toggle theme"
-        >
-          {theme === "light" ? (
-            <Moon className="w-5 h-5" />
-          ) : (
-            <Sun className="w-5 h-5 text-accent-amber animate-[spin_10s_linear_infinite]" />
-          )}
-        </button>
+        {/* Bottom: Search + Theme Toggle */}
+        <div className="flex flex-col items-center gap-4">
+          <button
+            onClick={openSiteSearch}
+            className="w-11 h-11 border-2 border-border bg-bg text-text rounded-full flex items-center justify-center shadow-brutal hover:shadow-brutal-sm hover:translate-x-[2px] hover:translate-y-[2px] transition-all duration-150 cursor-pointer"
+            aria-label="Search the site (Ctrl+K)"
+            title="Search (Ctrl+K)"
+          >
+            <Search className="w-5 h-5" />
+          </button>
+          <button
+            onClick={toggleTheme}
+            className="w-11 h-11 border-2 border-border bg-bg text-text rounded-full flex items-center justify-center shadow-brutal hover:shadow-brutal-sm hover:translate-x-[2px] hover:translate-y-[2px] transition-all duration-150 cursor-pointer"
+            aria-label="Toggle theme"
+          >
+            {theme === "light" ? (
+              <Moon className="w-5 h-5" />
+            ) : (
+              <Sun className="w-5 h-5 text-accent-amber animate-[spin_10s_linear_infinite]" />
+            )}
+          </button>
+        </div>
       </aside>
 
       {/* 2. DESKTOP LEFT SLIDING DRAWER MENU */}
@@ -137,18 +148,27 @@ export default function Navbar() {
           </Link>
         </div>
 
-        {/* Right: Theme Toggle */}
-        <button
-          onClick={toggleTheme}
-          className="w-10 h-10 border-2 border-border bg-surface text-text rounded-full flex items-center justify-center shadow-brutal hover:shadow-brutal-sm hover:translate-x-[2px] hover:translate-y-[2px] transition-all cursor-pointer"
-          aria-label="Toggle theme"
-        >
-          {theme === "light" ? (
-            <Moon className="w-4 h-4" />
-          ) : (
-            <Sun className="w-4 h-4 text-accent-amber" />
-          )}
-        </button>
+        {/* Right: Search + Theme Toggle */}
+        <div className="flex items-center gap-2">
+          <button
+            onClick={openSiteSearch}
+            className="w-10 h-10 border-2 border-border bg-surface text-text rounded-full flex items-center justify-center shadow-brutal hover:shadow-brutal-sm hover:translate-x-[2px] hover:translate-y-[2px] transition-all cursor-pointer"
+            aria-label="Search the site"
+          >
+            <Search className="w-4 h-4" />
+          </button>
+          <button
+            onClick={toggleTheme}
+            className="w-10 h-10 border-2 border-border bg-surface text-text rounded-full flex items-center justify-center shadow-brutal hover:shadow-brutal-sm hover:translate-x-[2px] hover:translate-y-[2px] transition-all cursor-pointer"
+            aria-label="Toggle theme"
+          >
+            {theme === "light" ? (
+              <Moon className="w-4 h-4" />
+            ) : (
+              <Sun className="w-4 h-4 text-accent-amber" />
+            )}
+          </button>
+        </div>
       </header>
 
       {/* 4. MOBILE SLIDING DRAWER MENU */}

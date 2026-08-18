@@ -3,7 +3,9 @@ import Link from "next/link";
 import { Mail, Phone, ArrowUpRight, FileText } from "lucide-react";
 import Reveal from "@/components/Reveal";
 import { Stagger, StaggerItem } from "@/components/Stagger";
+import CopyButton from "@/components/CopyButton";
 import { BASE_PATH } from "@/lib/basePath";
+import { LAST_UPDATED } from "@/lib/site";
 
 const GithubIcon = () => (
   <svg className="w-4 h-4 fill-current" viewBox="0 0 24 24">
@@ -117,26 +119,28 @@ export default function Footer() {
           <StaggerItem>
             <h4 className="font-display font-bold text-lg text-text mb-4">Direct Contact</h4>
             <ul className="space-y-3">
-              <li>
+              <li className="flex items-center gap-2">
                 <a
                   href="mailto:hasanshahirconnect@gmail.com"
-                  className="inline-flex items-center gap-2 text-sm text-text-muted hover:text-text group"
+                  className="inline-flex items-center gap-2 text-sm text-text-muted hover:text-text group min-w-0 flex-1"
                 >
-                  <Mail className="w-4 h-4 text-accent-coral" />
+                  <Mail className="w-4 h-4 text-accent-coral flex-shrink-0" />
                   <span className="truncate group-hover:underline underline-offset-4">hasanshahirconnect@gmail.com</span>
                 </a>
+                <CopyButton text="hasanshahirconnect@gmail.com" label="email" className="flex-shrink-0" />
               </li>
-              <li>
+              <li className="flex items-center gap-2">
                 <a
                   href="https://wa.me/923330405008"
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="inline-flex items-center gap-2 text-sm text-text-muted hover:text-text group"
+                  className="inline-flex items-center gap-2 text-sm text-text-muted hover:text-text group flex-1"
                 >
-                  <Phone className="w-4 h-4 text-accent-sky" />
+                  <Phone className="w-4 h-4 text-accent-sky flex-shrink-0" />
                   <span className="group-hover:underline underline-offset-4">+92 333 0405008</span>
                   <ArrowUpRight className="w-3.5 h-3.5 text-text-muted opacity-0 group-hover:opacity-100 transition-opacity" />
                 </a>
+                <CopyButton text="+923330405008" label="phone number" className="flex-shrink-0" />
               </li>
             </ul>
           </StaggerItem>
@@ -147,6 +151,7 @@ export default function Footer() {
           <p className="text-text-muted text-xs">
             &copy; {currentYear} HKH Agency. All rights reserved. Work delivered under our previous name, Digivolve — now HKH.
           </p>
+          <p className="text-text-muted text-xs">Last updated: {LAST_UPDATED}</p>
         </div>
         </Reveal>
       </div>

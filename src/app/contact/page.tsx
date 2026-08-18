@@ -10,7 +10,10 @@ import { Stagger, StaggerItem } from "@/components/Stagger";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import WhatsAppButton from "@/components/WhatsAppButton";
+import CopyButton from "@/components/CopyButton";
+import FAQSection from "@/components/FAQSection";
 import { supabase } from "@/lib/supabase/client";
+import { getUtm } from "@/lib/utm";
 
 function ContactContent() {
   const searchParams = useSearchParams();
@@ -56,10 +59,25 @@ function ContactContent() {
     }
 
     try {
-      // 1. Insert into database
+      // 0. Attach any captured UTM campaign params to the lead
+      const utm = getUtm();
+
+      // 1. Insert into database (sanitized + rate-limited server-side)
       const { error: insertError } = await supabase
         .from("contact_submissions")
-        .insert([{ name: trimmedName, email: trimmedEmail, message: trimmedMessage }]);
+        .insert([
+          {
+            name: trimmedName,
+            email: trimmedEmail,
+            message: trimmedMessage,
+            utm_source: utm.utm_source ?? null,
+            utm_medium: utm.utm_medium ?? null,
+            utm_campaign: utm.utm_campaign ?? null,
+            utm_term: utm.utm_term ?? null,
+            utm_content: utm.utm_content ?? null,
+            gclid: utm.gclid ?? null,
+          },
+        ]);
 
       if (insertError) throw insertError;
 
@@ -73,7 +91,7 @@ function ContactContent() {
           "Content-Type": "application/json",
           ...(token && { Authorization: `Bearer ${token}` })
         },
-        body: JSON.stringify({ name: trimmedName, email: trimmedEmail, message: trimmedMessage }),
+        body: JSON.stringify({ name: trimmedName, email: trimmedEmail, message: trimmedMessage, utm }),
       });
 
       if (!emailRes.ok) {
@@ -120,7 +138,7 @@ function ContactContent() {
   ];
 
   return (
-    <main className="flex-grow pt-24 md:pt-32 pb-20 transition-colors duration-300">
+    <main id="main-content" tabIndex={-1} className="flex-grow pt-24 md:pt-32 pb-20 transition-colors duration-300">
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
         
         {/* Breadcrumb Back link */}
@@ -331,39 +349,33 @@ function ContactContent() {
               
               <Stagger className="space-y-4">
                 <StaggerItem>
-                <a
-                  href="mailto:hasanshahirconnect@gmail.com"
-                  className="flex items-start gap-4 p-3 border border-border/10 bg-bg hover:border-border rounded-xl transition-all group"
-                >
+                <div className="flex items-start gap-4 p-3 border border-border/10 bg-bg hover:border-border rounded-xl transition-all group">
                   <span className="brutalist-badge-coral w-10 h-10 flex-shrink-0">
                     <Mail className="w-4 h-4 text-white" />
                   </span>
-                  <div className="min-w-0">
+                  <div className="min-w-0 flex-1">
                     <span className="text-[10px] font-bold text-text-muted uppercase tracking-wider block">Write Us Directly</span>
                     <span className="text-sm font-semibold text-text truncate block group-hover:underline underline-offset-2">
                       hasanshahirconnect@gmail.com
                     </span>
                   </div>
-                </a>
+                  <CopyButton text="hasanshahirconnect@gmail.com" label="email" className="flex-shrink-0" />
+                </div>
 
                 </StaggerItem>
                 <StaggerItem>
-                <a
-                  href="https://wa.me/923330405008"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="flex items-start gap-4 p-3 border border-border/10 bg-bg hover:border-border rounded-xl transition-all group"
-                >
+                <div className="flex items-start gap-4 p-3 border border-border/10 bg-bg hover:border-border rounded-xl transition-all group">
                   <span className="brutalist-badge-sky w-10 h-10 flex-shrink-0">
                     <Phone className="w-4 h-4 text-text" />
                   </span>
-                  <div>
+                  <div className="flex-1 min-w-0">
                     <span className="text-[10px] font-bold text-text-muted uppercase tracking-wider block">WhatsApp Connect</span>
                     <span className="text-sm font-semibold text-text block group-hover:underline underline-offset-2">
                       +92 333 0405008
                     </span>
                   </div>
-                </a>
+                  <CopyButton text="+923330405008" label="phone number" className="flex-shrink-0" />
+                </div>
                 </StaggerItem>
                 <StaggerItem>
                 <div className="flex items-start gap-4 p-3 border border-border/10 bg-bg rounded-xl">
@@ -394,6 +406,11 @@ function ContactContent() {
             </div>
           </Reveal>
 
+        </div>
+
+        {/* FAQ */}
+        <div className="mt-24">
+          <FAQSection />
         </div>
       </div>
     </main>

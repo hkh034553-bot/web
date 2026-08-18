@@ -15,28 +15,12 @@ interface TeamMember {
 
 const TEAM: TeamMember[] = [
   {
+    name: "Hafeez Farooq",
+    title: "CEO and Founder",
+  },
+  {
     name: "Hasan Shahir",
-    title: "Founder & Creative Director",
-  },
-  {
-    name: "Ayesha Raza",
-    title: "Head of Design",
-  },
-  {
-    name: "Bilal Ahmed",
-    title: "Lead Web Developer",
-  },
-  {
-    name: "Zara Khan",
-    title: "Social Media Strategist",
-  },
-  {
-    name: "Omar Farooq",
-    title: "Performance Marketing Lead",
-  },
-  {
-    name: "Fatima Noor",
-    title: "Content & Brand Copywriter",
+    title: "Lead Team Developer",
   },
 ];
 
@@ -64,12 +48,12 @@ export default function TeamSection() {
               Meet the Team <span className="font-normal text-text-muted">Behind the Punch</span>
             </h2>
             <p className="text-text-muted mt-3">
-              A small, senior crew — designers, developers, and strategists who ship directly. No account-manager layers, no hand-offs.
+              The leadership behind HKH — a small, senior crew that ships directly. No account-manager layers, no hand-offs.
             </p>
           </div>
         </Reveal>
 
-        <Stagger className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
+        <Stagger className="grid grid-cols-1 sm:grid-cols-2 gap-8 max-w-3xl mx-auto">
           {TEAM.map((member) => (
             <StaggerItem key={member.name}>
               <TiltCard maxTilt={10} className="h-full">

@@ -174,7 +174,7 @@ export default function Home() {
     <>
       <Navbar />
 
-      <main className="flex-grow transition-colors duration-300">
+      <main id="main-content" tabIndex={-1} className="flex-grow transition-colors duration-300">
         {/* HERO SECTION — interactive: hover the service tabs, tilt the dashboard, scroll for parallax */}
         <HeroInteractive
           badge={
