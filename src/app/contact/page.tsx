@@ -104,7 +104,7 @@ function ContactContent() {
         particleCount: 100,
         spread: 70,
         origin: { y: 0.6 },
-        colors: ["#667eea", "#764ba2", "#16151A", "#FAFAF6"]
+        colors: ["#FD0178", "#0000FF", "#16151A", "#FAFAF6"]
       });
 
       setFullName("");
