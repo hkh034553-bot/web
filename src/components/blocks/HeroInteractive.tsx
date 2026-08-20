@@ -464,8 +464,8 @@ export default function HeroInteractive({
       <div className="absolute inset-0 bg-[linear-gradient(to_right,rgba(22,21,26,0.06)_1px,transparent_1px),linear-gradient(to_bottom,rgba(22,21,26,0.06)_1px,transparent_1px)] dark:bg-[linear-gradient(to_right,rgba(246,244,239,0.03)_1px,transparent_1px),linear-gradient(to_bottom,rgba(246,244,239,0.03)_1px,transparent_1px)] bg-[size:4rem_4rem] [mask-image:radial-gradient(ellipse_70%_60%_at_50%_40%,#000_65%,transparent_100%)] -z-20 pointer-events-none" />
 
       {/* Pink + blue corner glows (createwithflow duo) */}
-      <div aria-hidden className="absolute -top-24 -left-24 w-[28rem] h-[28rem] rounded-full bg-accent-pink/20 dark:bg-accent-pink/10 blur-3xl -z-10 pointer-events-none" />
-      <div aria-hidden className="absolute -bottom-32 -right-24 w-[32rem] h-[32rem] rounded-full bg-accent-blue/15 dark:bg-accent-blue/10 blur-3xl -z-10 pointer-events-none" />
+      <div aria-hidden className="absolute -top-24 -left-24 w-[28rem] h-[28rem] rounded-full bg-accent-pink/10 dark:bg-accent-pink/5 blur-3xl -z-10 pointer-events-none" />
+      <div aria-hidden className="absolute -bottom-32 -right-24 w-[32rem] h-[32rem] rounded-full bg-accent-blue/10 dark:bg-accent-blue/5 blur-3xl -z-10 pointer-events-none" />
 
       {/* Cursor-following spotlight glow */}
       <motion.div
@@ -479,7 +479,7 @@ export default function HeroInteractive({
         sx={sNX}
         sy={sNY}
         size={52}
-        color="bg-accent-pink/25 dark:bg-accent-pink/15"
+        color="bg-accent-pink/15 dark:bg-accent-pink/10"
         parallax={26}
         className="top-[12%] left-[4%]"
         baseRotateX={20}
@@ -491,7 +491,7 @@ export default function HeroInteractive({
         sx={sNX}
         sy={sNY}
         size={72}
-        color="bg-accent-blue/25 dark:bg-accent-blue/15"
+        color="bg-accent-blue/15 dark:bg-accent-blue/10"
         parallax={38}
         className="top-[18%] right-[3%]"
         baseRotateX={30}
@@ -503,7 +503,7 @@ export default function HeroInteractive({
         sx={sNX}
         sy={sNY}
         size={44}
-        color="bg-accent-pink/30 dark:bg-accent-pink/15"
+        color="bg-accent-pink/20 dark:bg-accent-pink/10"
         parallax={30}
         className="bottom-[14%] left-[7%]"
         baseRotateX={-18}
@@ -646,13 +646,13 @@ export default function HeroInteractive({
                   {/* Back page 2 — furthest, peeking from behind */}
                   <div
                     aria-hidden
-                    className="absolute inset-0 rounded-2xl border-2 border-border bg-accent-blue/25 dark:bg-accent-blue/10"
+                    className="absolute inset-0 rounded-2xl border-2 border-border bg-accent-blue/15 dark:bg-accent-blue/5"
                     style={{ transform: "translateZ(-70px) translate(-14px, -10px) rotate(1.6deg)" }}
                   />
                   {/* Back page 1 — closer */}
                   <div
                     aria-hidden
-                    className="absolute inset-0 rounded-2xl border-2 border-border bg-accent-pink/25 dark:bg-accent-pink/10"
+                    className="absolute inset-0 rounded-2xl border-2 border-border bg-accent-pink/15 dark:bg-accent-pink/5"
                     style={{ transform: "translateZ(-42px) translate(-7px, -5px) rotate(0.8deg)" }}
                   />
 

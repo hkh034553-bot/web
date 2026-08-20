@@ -3,7 +3,7 @@
 @custom-variant dark (&:where(.dark, .dark *));
 
 /* ------------------------------------------------------------------
-   Brand palette — createwithflow.com duo: hot pink #FD0178 + pure blue #0000FF
+   Brand palette — toned-down purple/blue duo
    (legacy names kept for zero-churn compatibility:
     accent-coral -> pink, accent-sky -> blue, accent-amber -> gold)
 ------------------------------------------------------------------- */
@@ -14,9 +14,9 @@
   --text-muted: #5B5A63;
   --border: #16151A;
 
-  /* Primary duo (createwithflow) */
-  --accent-coral: #FD0178; /* hot pink  */
-  --accent-sky: #0000FF;   /* pure blue */
+  /* Primary duo (toned down) */
+  --accent-coral: #E84393; /* softer pink */
+  --accent-sky: #4A6CF7;   /* muted blue */
   /* Supporting gold — used sparingly (stars, warnings, sun icon) */
   --accent-amber: #F5B800;
 
@@ -35,8 +35,8 @@
   --text-muted: #A9A6B4;
   --border: #F6F4EF;
 
-  --accent-coral: #FF2E8C;
-  --accent-sky: #4D6BFF;
+  --accent-coral: #D63384;
+  --accent-sky: #6C8EF2;
   --accent-amber: #FFC24B;
 
   --accent-pink: var(--accent-coral);
@@ -61,9 +61,9 @@
   --color-accent-blue: var(--accent-blue);
   --color-accent-gold: var(--accent-gold);
 
-  /* createwithflow duo for gradients */
-  --color-flow-pink: #FD0178;
-  --color-flow-blue: #0000FF;
+  /* Muted gradient colors */
+  --color-flow-pink: #667eea;
+  --color-flow-blue: #764ba2;
 
   /* Near-black for the bold (createwithflow-style) CTA canvas */
   --color-ink: #0B0B10;
@@ -91,13 +91,13 @@ body {
   transition: background-color 0.3s ease, color 0.3s ease;
 }
 
-/* Signature pink->blue gradient (createwithflow) */
+/* Soft gradient */
 .bg-flow-gradient {
-  background-image: linear-gradient(120deg, #FD0178 0%, #FD0178 38%, #0000FF 100%);
+  background-image: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
 }
 
 .text-flow-gradient {
-  background-image: linear-gradient(120deg, #FD0178 0%, #FD0178 45%, #0000FF 100%);
+  background-image: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
   -webkit-background-clip: text;
   background-clip: text;
   color: transparent;

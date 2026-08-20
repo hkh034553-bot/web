@@ -529,8 +529,8 @@ export default function Home() {
         {/* CTA BANNER — bold ink canvas, createwithflow-style */}
         <section className="py-16 md:py-24 border-t-2 border-border bg-ink text-white relative overflow-hidden">
           <div className="absolute inset-0 bg-[linear-gradient(to_right,rgba(253,1,120,0.10)_1px,transparent_1px),linear-gradient(to_bottom,rgba(0,0,255,0.10)_1px,transparent_1px)] bg-[size:3rem_3rem] -z-10 pointer-events-none" />
-          <div aria-hidden className="absolute -top-32 left-1/4 w-96 h-96 rounded-full bg-accent-pink/25 blur-3xl -z-10 pointer-events-none" />
-          <div aria-hidden className="absolute -bottom-32 right-1/4 w-96 h-96 rounded-full bg-accent-blue/25 blur-3xl -z-10 pointer-events-none" />
+          <div aria-hidden className="absolute -top-32 left-1/4 w-96 h-96 rounded-full bg-accent-pink/15 blur-3xl -z-10 pointer-events-none" />
+          <div aria-hidden className="absolute -bottom-32 right-1/4 w-96 h-96 rounded-full bg-accent-blue/15 blur-3xl -z-10 pointer-events-none" />
           <Reveal>
             <div className="mx-auto max-w-5xl px-4 sm:px-6 lg:px-8 text-center space-y-8 relative z-10">
               <h2 className="font-display font-bold text-3xl sm:text-5xl md:text-6xl text-white leading-tight max-w-4xl mx-auto">
@@ -543,7 +543,7 @@ export default function Home() {
                 <Magnetic strength={0.25}>
                   <Link
                     href="/contact"
-                    className="brutalist-btn bg-flow-gradient text-white border-2 border-white/20 rounded-full px-8 py-4 font-bold shadow-[4px_4px_0_#FD0178] hover:translate-x-[2px] hover:translate-y-[2px] hover:shadow-[2px_2px_0_#FD0178] transition-all duration-150 w-full sm:w-auto text-center"
+                    className="brutalist-btn bg-flow-gradient text-white border-2 border-white/20 rounded-full px-8 py-4 font-bold shadow-brutal hover:translate-x-[2px] hover:translate-y-[2px] hover:shadow-brutal-hover transition-all duration-150 w-full sm:w-auto text-center"
                   >
                     Get a Free Quote
                   </Link>
@@ -552,7 +552,7 @@ export default function Home() {
                   <Link
                     href="/portfolio.pdf"
                     target="_blank"
-                    className="brutalist-btn bg-surface text-text border-2 border-border rounded-full px-8 py-4 font-bold shadow-[4px_4px_0_#FD0178] hover:translate-x-[2px] hover:translate-y-[2px] hover:shadow-[2px_2px_0_#FD0178] transition-all duration-150 w-full sm:w-auto text-center"
+                    className="brutalist-btn bg-surface text-text border-2 border-border rounded-full px-8 py-4 font-bold shadow-brutal hover:translate-x-[2px] hover:translate-y-[2px] hover:shadow-brutal-hover transition-all duration-150 w-full sm:w-auto text-center"
                   >
                     View Our Portfolio
                   </Link>
